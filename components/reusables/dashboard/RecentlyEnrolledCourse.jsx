@@ -8,23 +8,26 @@ const RecentlyEnrolledCourse = ({ isNotEnrolled }) => {
   console.log(isNotEnrolled);
 
   return (
-    <div className="bg-pri1 py-4 px-5 rounded-md mb-6">
-      <div className="space-y-5">
-        <p className="font-semibold text-pri10 flex item-center justify-between">
+    <div className="bg-pri1 py-4 px-3 lg:px-5 rounded-md mb-6">
+      <div className="space-y-4 lg:space-y-5">
+        <p className="font-semibold text-pri10 flex items-center justify-between text-sm lg:text-base">
           Recently enrolled courses{" "}
-          <Link href="/dashboard/courses" className="underline">
+          <Link
+            href="/dashboard/courses"
+            className="underline text-xs lg:text-sm"
+          >
             View more
           </Link>
         </p>
         {isNotEnrolled ? (
-          <div className="grid text-center text-xl font-semibold gap-y-2 py-3">
+          <div className="grid text-center text-lg lg:text-xl font-semibold gap-y-2 py-3">
             <p className="text-pri10">You are yet to enroll for a course.</p>
             <Link href="/enroll" className="text-primary underline">
               Enroll now
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
             {enrolledCourses.map((item, index) => (
               <RecentlyEnrolledCourseCard
                 key={index}

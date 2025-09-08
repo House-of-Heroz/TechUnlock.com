@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createAdminUser } from "@/services/admin";
+import { uploadToCloudinary } from "@/services/account";
 import { showErrorToast, showSuccessToast } from "@/helpers/toastUtil";
 
 const AddAdminPage = () => {
@@ -23,6 +24,8 @@ const AddAdminPage = () => {
 
   const [selectedRole, setSelectedRole] = useState("USER");
   const [isSaving, setIsSaving] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
 
   // Roles as specified by requirements
   const roles = ["USER", "TRAINER", "ADMIN", "SUPER ADMIN"];
@@ -63,6 +66,19 @@ const AddAdminPage = () => {
       if (!validate()) return;
       setIsSaving(true);
 
+      let profileImageUrl = null;
+
+      // Upload profile image first if selected
+      if (profileImage && typeof profileImage !== "string") {
+        profileImageUrl = await uploadToCloudinary(profileImage, {
+          type: "profile",
+          userId: "admin", // You might want to use a different identifier
+        });
+      } else if (typeof profileImage === "string") {
+        profileImageUrl = profileImage;
+      }
+
+      // Create payload object (not FormData)
       const payload = {
         first_name: formData.firstName,
         last_name: formData.lastName,
@@ -72,6 +88,11 @@ const AddAdminPage = () => {
         address: formData.homeAddress,
         phone: formData.phoneNumber,
       };
+
+      // Add profile image URL if available
+      if (profileImageUrl) {
+        payload.profile_picture = profileImageUrl;
+      }
 
       await createAdminUser(payload);
       showSuccessToast("Admin created successfully");
@@ -84,8 +105,37 @@ const AddAdminPage = () => {
     }
   };
 
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        showErrorToast("Please select a valid image file");
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showErrorToast("Image size should be less than 5MB");
+        return;
+      }
+
+      setProfileImage(file);
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfileImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleChangePhoto = () => {
-    // Optional: integrate profile photo upload later
+    // Trigger file input
+    const fileInput = document.getElementById("profile-image-input");
+    fileInput.click();
   };
 
   return (
@@ -117,20 +167,56 @@ const AddAdminPage = () => {
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
               <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
-                <span className="text-3xl font-semibold text-gray-600">
-                  {formData.firstName ? formData.firstName[0] : "A"}
-                  {formData.lastName ? formData.lastName[0] : "A"}
-                </span>
+                {profileImagePreview ? (
+                  <img
+                    src={profileImagePreview}
+                    alt="Profile preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-3xl font-semibold text-gray-600">
+                    {formData.firstName ? formData.firstName[0] : "A"}
+                    {formData.lastName ? formData.lastName[0] : "A"}
+                  </span>
+                )}
               </div>
             </div>
+
+            {/* Hidden file input */}
+            <input
+              id="profile-image-input"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+
             <Button
               onClick={handleChangePhoto}
               variant="outline"
               className="border-blue-300 text-[#268FB6] "
             >
               <Camera className="h-4 w-4 mr-2" />
-              Change photo
+              {profileImage ? "Change photo" : "Add photo"}
             </Button>
+
+            {profileImage && (
+              <Button
+                onClick={() => {
+                  setProfileImage(null);
+                  setProfileImagePreview(null);
+                  // Clear the file input
+                  const fileInput = document.getElementById(
+                    "profile-image-input"
+                  );
+                  if (fileInput) fileInput.value = "";
+                }}
+                variant="outline"
+                className="border-red-300 text-red-600 hover:bg-red-50"
+              >
+                Remove photo
+              </Button>
+            )}
           </div>
         </div>
 

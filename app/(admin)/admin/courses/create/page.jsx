@@ -180,7 +180,7 @@ const CreateCoursePage = () => {
       courseTitle: "",
       shortDescription: "",
       detailedDescription: "",
-      category:"",
+      category: "",
       instructor: "",
       numberOfModules: "",
       estimatedTime: "",
@@ -921,8 +921,8 @@ const CreateCoursePage = () => {
       shortDescription: "",
       detailedDescription: "",
       numberOfModules: "",
-       instructor: "",
-        category: "",
+      instructor: "",
+      category: "",
       estimatedTime: "",
       tags: "",
       difficulty: "",
@@ -1282,7 +1282,7 @@ const CreateCoursePage = () => {
 
       // Clear form data after successful creation
       clearFormData();
-localStorage.removeItem("courseCreationSteps")
+      localStorage.removeItem("courseCreationSteps");
       // Redirect to courses page
       router.push("/admin/courses");
     } catch (error) {
@@ -1312,7 +1312,6 @@ localStorage.removeItem("courseCreationSteps")
             ? `Edit Course`
             : "Create Course"}
         </h1>
-       
       </div>
 
       {/* Step Navigation */}
@@ -1415,7 +1414,6 @@ localStorage.removeItem("courseCreationSteps")
               <h3 className="text-lg font-semibold text-gray-800">
                 Course Information
               </h3>
-             
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
@@ -1462,7 +1460,6 @@ localStorage.removeItem("courseCreationSteps")
                     placeholder="Enter a description..."
                   />
                 </div>
-
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1598,14 +1595,14 @@ localStorage.removeItem("courseCreationSteps")
                     }
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="">
-                      Select Category
-                    </option>
+                    <option value="">Select Category</option>
                     <option value="Cybersecurity">Cybersecurity</option>
                     <option value="Digital Marketing">Digital Marketing</option>
                     <option value="Web Development"> Web Development</option>
                     <option value="Data Analysis">Data Analysis</option>
-                    <option value=" Artificial Intelligence">Artificial Intelligence</option>
+                    <option value=" Artificial Intelligence">
+                      Artificial Intelligence
+                    </option>
                     <option value=" UI/UX Design">UI/UX Design</option>
                   </select>
                 </div>
@@ -1994,17 +1991,17 @@ localStorage.removeItem("courseCreationSteps")
               onChange={handleModuleAdditionalResourcesChange}
               placeholder="Enter a description..."
             />
-         <button 
-  onClick={() => {
-    const videoInput = document.getElementById('video-upload');
-    if (videoInput) {
-      videoInput.click();
-    }
-  }}
-  className="mt-4 bg-blue-100 text-[#13485B] px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors"
->
-  Add Video
-</button>
+            <button
+              onClick={() => {
+                const videoInput = document.getElementById("video-upload");
+                if (videoInput) {
+                  videoInput.click();
+                }
+              }}
+              className="mt-4 bg-blue-100 text-[#13485B] px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors"
+            >
+              Add Video
+            </button>
           </div>
 
           {/* Summary */}
@@ -2383,7 +2380,7 @@ localStorage.removeItem("courseCreationSteps")
                 onClick={handleContinue}
                 className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Continue to Summary →
+                Continue to Badge Setup →
               </button>
             </div>
           )}

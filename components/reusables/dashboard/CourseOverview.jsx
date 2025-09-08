@@ -17,9 +17,9 @@ const CourseOverview = ({ items }) => {
   return (
     <div className="space-y-4 mb-6">
       <div className="font-semibold text-pri10">
-        <p>Course overview</p>
+        <p className="text-sm lg:text-base">Course overview</p>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-x-6">
         {/* Course cards */}
         {enriched.map((item) => (
           <CourseOverviewCard

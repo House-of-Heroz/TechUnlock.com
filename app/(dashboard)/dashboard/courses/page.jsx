@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Search, BookOpen, GraduationCap, Award } from "lucide-react";
 import { useCourses } from "@/Context/courses";
 import { getEnrolledCourses, getCompletedCourses } from "@/services/course";
@@ -11,12 +12,25 @@ import { EnrolledIcon, CompletedCoursesIcon } from "@/components/svgs";
 
 const CoursesPage = () => {
   const { courses } = useCourses();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("available");
   const [searchTerm, setSearchTerm] = useState("");
   const [hasEnrolled, setHasEnrolled] = useState(false);
   const [hasCompleted, setHasCompleted] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [completedCourses, setCompletedCourses] = useState([]);
+
+  // Valid tab values
+  const validTabs = ["available", "enrolled", "completed"];
+
+  useEffect(() => {
+    // Check for tab query parameter on component mount
+    const tabParam = searchParams.get("tab");
+    if (tabParam && validTabs.includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const loadEnrolledCourses = async () => {
@@ -54,6 +68,14 @@ const CoursesPage = () => {
       course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    // Update URL query parameter
+    const params = new URLSearchParams(searchParams);
+    params.set("tab", tabId);
+    router.push(`?${params.toString()}`);
+  };
 
   const renderAvailableCourses = () => (
     <div className="space-y-6">
@@ -140,7 +162,7 @@ const CoursesPage = () => {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 className={`py-4 px-4 border-b-2 font-medium text-sm flex items-center rounded-lg space-x-2 ${
                   activeTab === tab.id
                     ? "bg-[#268FB6] text-white"
