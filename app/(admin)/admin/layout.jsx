@@ -19,6 +19,7 @@ const AdminLayout = ({ children }) => {
   const isAdmin =
     userType === "Super Admin" ||
     userType === "Admin" ||
+    userType === "Trainer" ||
     Boolean(
       auth?.is_admin_user ||
         auth?.is_admin ||
@@ -62,7 +63,7 @@ const AdminLayout = ({ children }) => {
 
               {/* Navigation */}
               <div className="w-5/6 mx-auto">
-                <AdminNavigation />
+                <AdminNavigation userRole={userType} />
               </div>
             </div>
           </div>

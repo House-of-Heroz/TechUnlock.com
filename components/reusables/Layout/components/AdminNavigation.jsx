@@ -6,9 +6,15 @@ import Link from "next/link";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-const AdminNavigation = () => {
+const AdminNavigation = ({ userRole }) => {
   const [openLinks, setOpenLinks] = useState({});
   const pathname = usePathname();
+
+  // Filter navigation links based on user role
+  const getFilteredLinks = (links) => {
+    if (!userRole) return links;
+    return links.filter((link) => link.roles && link.roles.includes(userRole));
+  };
 
   const handleToggle = (id) => {
     setOpenLinks((prev) => ({
@@ -23,7 +29,7 @@ const AdminNavigation = () => {
       className="flex flex-col justify-between h-[calc(100vh-200px)] h-ful"
     >
       <ul className="list-none p-0 m-0 text-pri1 flex-1 bg-blac">
-        {adminNavLinks
+        {getFilteredLinks(adminNavLinks)
           .filter((link) => link.name !== "Settings")
           .map((link) => {
             const isActive =
@@ -100,7 +106,7 @@ const AdminNavigation = () => {
 
       {/* Settings at the bottom */}
       <div className="mt-auto">
-        {adminNavLinks
+        {getFilteredLinks(adminNavLinks)
           .filter((link) => link.name === "Settings")
           .map((link) => {
             const isActive = pathname === link.to;

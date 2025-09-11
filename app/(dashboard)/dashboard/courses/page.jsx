@@ -92,7 +92,12 @@ const CoursesPage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCourses?.map((item) => (
-          <CourseCard item={item} key={item.id} />
+          <CourseCard
+            item={item}
+            key={item.id}
+            enrolledCourses={enrolledCourses}
+            currentTab={activeTab}
+          />
         ))}
       </div>
 
@@ -112,7 +117,12 @@ const CoursesPage = () => {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {enrolledCourses.map((item) => (
-              <CourseCard item={item} key={item.id} />
+              <CourseCard
+                item={item}
+                key={item.id}
+                enrolledCourses={enrolledCourses}
+                currentTab={activeTab}
+              />
             ))}
           </div>
         </div>
@@ -133,7 +143,12 @@ const CoursesPage = () => {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {completedCourses.map((item) => (
-              <CourseCard item={item} key={item.id} />
+              <CourseCard
+                item={item}
+                key={item.id}
+                enrolledCourses={enrolledCourses}
+                currentTab={activeTab}
+              />
             ))}
           </div>
         </div>

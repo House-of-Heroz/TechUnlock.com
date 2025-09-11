@@ -1,10 +1,9 @@
 import React from "react";
 import testimony from "@/assets/course-page/feedback.svg";
 import Image from "next/image";
-import { categoryMap } from "./Banner";
 
 const FeedbackCard = ({ course, image, name, review }) => {
-  const fullCategoryName = categoryMap[course?.category] || course?.category;
+  const fullCategoryName = course?.category;
 
   return (
     <div className="bg-pri1 rounded">

@@ -49,13 +49,14 @@ const CourseCard = React.memo(({ item }) => {
           />
         </div>
 
-        <div className="pl-3 lg:w-2/3 grid lg:gap-y-6 gap-y-3 py-2">
+        <div className="pl-3 lg:w-2/3 grid lg:gap-y-6 gap-y-3 py-3">
           <div className="flex justify-between items-start w-[90%]">
             <h1 className="text-2xl text-darkblue font-semibold">
               {item?.title}
             </h1>
             <Rating rating={5} />
           </div>
+
           <div className="text-gray-900">
             <p>{item?.short_description}</p>
           </div>

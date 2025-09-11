@@ -28,10 +28,12 @@ import { showErrorToast, showSuccessToast } from "@/helpers/toastUtil";
 import Image from "next/image";
 import LoadingSpinner from "@/components/reusables/LoadingSpinner";
 import { useCourses } from "@/Context/courses";
+import { useAuth } from "@/Context/auth";
 
 const CourseDetailsPage = ({ params }) => {
   const router = useRouter();
   const { enrolledCourses } = useCourses();
+  const { auth } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const [courseDetails, setCourseDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -150,9 +152,42 @@ const CourseDetailsPage = ({ params }) => {
     console.log("handleEnroll called with course ID:", id);
     console.log("Course details:", courseDetails);
 
+    // Check if user is authenticated
+    if (!auth) {
+      showErrorToast("Please log in to enroll in courses");
+      router.push("/login");
+      return;
+    }
+
+    // Check if already enrolled
+    if (isEnrolled) {
+      showSuccessToast("You are already enrolled in this course");
+      router.push(`/dashboard/courses/${id}/watch`);
+      return;
+    }
+
     try {
-      if (courseDetails.price === 0) {
-        // Free course - enroll directly
+      // Check if course is free and beginner level
+      const isFreeBeginner =
+        courseDetails.price === 0 &&
+        courseDetails.difficulty?.toLowerCase() === "beginner";
+
+      if (isFreeBeginner) {
+        // Free beginner course - enroll directly
+        console.log("Enrolling in free beginner course...");
+        const result = await enrollInCourse(id);
+        console.log("Enrollment result:", result);
+        showSuccessToast(result.message || "Successfully enrolled in course!");
+
+        // Refresh enrolled courses in context
+        if (typeof window !== "undefined") {
+          // Force a page reload to update the context
+          window.location.href = `/dashboard/courses/${id}/watch`;
+        } else {
+          router.push(`/dashboard/courses/${id}/watch`);
+        }
+      } else if (courseDetails.price === 0) {
+        // Free course but not beginner - still enroll directly
         console.log("Enrolling in free course...");
         const result = await enrollInCourse(id);
         console.log("Enrollment result:", result);
@@ -172,7 +207,12 @@ const CourseDetailsPage = ({ params }) => {
       }
     } catch (error) {
       console.error("Error enrolling in course:", error);
-      showErrorToast(error.message || "Failed to enroll in course");
+      if (error.message === "AUTH_REQUIRED") {
+        showErrorToast("Please log in to enroll in courses");
+        router.push("/login");
+      } else {
+        showErrorToast(error.message || "Failed to enroll in course");
+      }
     }
   };
 

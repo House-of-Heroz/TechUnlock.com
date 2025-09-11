@@ -22,7 +22,7 @@ import AI from "@/assets/course-page/AICard.svg";
 const Description = React.memo(({ course }) => {
   return (
     <div className="w-full">
-      <div className="grid gap-y-5 lg:gap-y-0 lg:flex lg:justify-between lg:items-center w-full bg-pri1 py-[2rem] px-[3rem]">
+      <div className="grid gap-y-5 lg:gap-y-0 lg:flex lg:justify-between lg:items-center w-full bg-pri1 py-[2rem] px-[2rem] lg:px-[3rem]">
         <div className="lg:w-[55%]">
           <div className="">
             <div className="relative w-4/5 ml-auto">
@@ -67,7 +67,7 @@ const Description = React.memo(({ course }) => {
                 {course?.description}
               </p>
 
-              <p className="text-sm">
+              {/* <p className="text-sm">
                 {course?.category === "UI/UX" ? (
                   <div className="">
                     <p className="">
@@ -187,7 +187,7 @@ const Description = React.memo(({ course }) => {
                     </ul>
                   </div>
                 )}
-              </p>
+              </p> */}
             </div>
           </div>
         </div>
@@ -195,13 +195,13 @@ const Description = React.memo(({ course }) => {
         <div className="lg:w-[40%]">
           <Image
             src={
-              course?.category === "UI/UX"
+              course?.category === "UI/UX Design"
                 ? course?.cover_image
-                : course?.category === "WEB"
+                : course?.category === "Web Development"
                 ? course?.cover_image
-                : course?.category === "CYBER"
+                : course?.category === "Cybersecurity"
                 ? course?.cover_image
-                : course?.category === "DM"
+                : course?.category === "Digital Marketing"
                 ? course?.cover_image
                 : course?.cover_image
             }

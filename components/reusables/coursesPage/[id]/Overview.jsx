@@ -12,9 +12,67 @@ import {
 } from "@/components/svgs";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/Context/auth";
+import { useCourses } from "@/Context/courses";
+import { enrollInCourse } from "@/services/course";
+import { showErrorToast, showSuccessToast } from "@/helpers/toastUtil";
+import { useState } from "react";
 
 const Overview = ({ course }) => {
   const router = useRouter();
+  const { auth } = useAuth();
+  const { enrolledCourses } = useCourses();
+  const [isEnrolling, setIsEnrolling] = useState(false);
+
+  // Check if course is free and beginner level
+  const isFreeBeginner =
+    !course?.is_paid && course?.difficulty?.toLowerCase() === "beginner";
+
+  // Check if already enrolled
+  const isAlreadyEnrolled = enrolledCourses?.some(
+    (enrolledCourse) => enrolledCourse.id === course?.id
+  );
+
+  // Handle enrollment with authentication check
+  const handleEnrollment = async () => {
+    // Check if user is authenticated
+    if (!auth) {
+      showErrorToast("Please log in to enroll in courses");
+      router.push("/login");
+      return;
+    }
+
+    // Check if already enrolled
+    if (isAlreadyEnrolled) {
+      showSuccessToast("You are already enrolled in this course");
+      router.push(`/dashboard/courses/${course.id}/watch`);
+      return;
+    }
+
+    try {
+      setIsEnrolling(true);
+
+      // For free beginner courses, enroll directly
+      if (isFreeBeginner) {
+        const result = await enrollInCourse(course.id);
+        showSuccessToast(result.message || "Successfully enrolled in course!");
+        router.push(`/dashboard/courses/${course.id}/watch`);
+      } else {
+        // For paid courses or non-beginner courses, go to payment page
+        router.push(`/courses/${course.id}/pay`);
+      }
+    } catch (error) {
+      console.error("Error enrolling in course:", error);
+      if (error.message === "AUTH_REQUIRED") {
+        showErrorToast("Please log in to enroll in courses");
+        router.push("/login");
+      } else {
+        showErrorToast(error.message || "Failed to enroll in course");
+      }
+    } finally {
+      setIsEnrolling(false);
+    }
+  };
 
   return (
     <div className="w-full bg-white py-[2rem] px-[1rem] md:px-[3rem]">
@@ -86,9 +144,16 @@ const Overview = ({ course }) => {
             <div className="flex justify-end mt-3 lg:mt-0">
               <Button
                 className="bg-primary text-white"
-                onClick={() => router.push(`/courses/${course?.id}/pay`)}
+                onClick={handleEnrollment}
+                disabled={isEnrolling || isAlreadyEnrolled}
               >
-                Apply now
+                {isEnrolling
+                  ? "Enrolling..."
+                  : isAlreadyEnrolled
+                  ? "Already Enrolled"
+                  : isFreeBeginner
+                  ? "Enroll Now (Free)"
+                  : "Enroll now"}
               </Button>
             </div>
           </div>

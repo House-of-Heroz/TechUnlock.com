@@ -18,6 +18,7 @@ import {
 } from "@/services/admin";
 import { showErrorToast } from "@/helpers/toastUtil";
 import { useAuth } from "@/Context/auth";
+import { useRouter } from "next/navigation";
 
 const AdminDashboardPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +30,7 @@ const AdminDashboardPage = () => {
     recentActivity: [],
   });
   const { auth } = useAuth();
-
+  const router = useRouter();
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -135,37 +136,36 @@ const AdminDashboardPage = () => {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div className="flex items-center space-x-4">
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
             Welcome, {auth?.first_name} {auth?.last_name}
           </h1>
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-            {" "}
-          </div>
         </div>
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {dashboardData.metrics.map((metric, index) => (
           <div
             key={index}
-            className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm"
+            className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 shadow-sm"
           >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">{metric.title}</p>
-                <p className="text-3xl font-bold text-gray-800">
+                <p className="text-2xl sm:text-3xl font-bold text-gray-800">
                   {metric.value}
                 </p>
               </div>
               <div
-                className={`w-12 h-12 ${metric.color} rounded-lg flex items-center justify-center`}
+                className={`w-10 h-10 sm:w-12 sm:h-12 ${metric.color} rounded-lg flex items-center justify-center`}
               >
-                <metric.icon className={`w-6 h-6 ${metric.iconColor}`} />
+                <metric.icon
+                  className={`w-5 h-5 sm:w-6 sm:h-6 ${metric.iconColor}`}
+                />
               </div>
             </div>
           </div>
@@ -173,17 +173,17 @@ const AdminDashboardPage = () => {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
         {/* Active Learners Chart */}
-        <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-gray-800">
+        <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800">
               Active Learners
             </h3>
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-1 text-sm flex items-center"
+              className="border border-gray-300 rounded-md px-3 py-1 text-sm flex items-center w-full sm:w-auto"
             >
               <option>Monthly</option>
               <option>Weekly</option>
@@ -193,25 +193,27 @@ const AdminDashboardPage = () => {
 
           <div className="space-y-4">
             {/* Chart Legend */}
-            <div className="flex items-center space-x-4 mb-4">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
-                <span className="text-sm text-gray-600">New</span>
+                <span className="text-xs sm:text-sm text-gray-600">New</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-                <span className="text-sm text-gray-600">Inactive</span>
+                <span className="text-xs sm:text-sm text-gray-600">
+                  Inactive
+                </span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 bg-blue-800 rounded-full"></div>
-                <span className="text-sm text-gray-600">Active</span>
+                <span className="text-xs sm:text-sm text-gray-600">Active</span>
               </div>
             </div>
 
             {/* Chart Container */}
-            <div className="relative h-64">
+            <div className="relative h-48 sm:h-64">
               {/* Y-axis */}
-              <div className="absolute left-0 top-0 bottom-0 w-12 flex flex-col justify-between text-xs text-gray-500">
+              <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-12 flex flex-col justify-between text-xs text-gray-500">
                 <span>1000</span>
                 <span>800</span>
                 <span>600</span>
@@ -221,47 +223,34 @@ const AdminDashboardPage = () => {
               </div>
 
               {/* Chart Bars */}
-              <div className="ml-12 h-full flex items-end space-x-8">
-                {["Data", "Digital", "Cyber", "UI/UX"].map((course, index) => {
-                  // Generate realistic data based on the image
+              <div className="ml-8 sm:ml-12 h-full flex items-end space-x-2 sm:space-x-4 lg:space-x-8">
+                {dashboardData.topCourses.map((course, index) => {
+                  // Use enrollment data from API, with some sample breakdown for visualization
                   const data = {
-                    Data: { new: 280, inactive: 150, active: 220, total: 650 },
-                    Digital: {
-                      new: 380,
-                      inactive: 300,
-                      active: 270,
-                      total: 950,
-                    },
-                    Cyber: { new: 150, inactive: 100, active: 100, total: 350 },
-                    "UI/UX": {
-                      new: 300,
-                      inactive: 200,
-                      active: 250,
-                      total: 750,
-                    },
+                    new: Math.round(course.value * 0.4), // 40% new
+                    inactive: Math.round(course.value * 0.2), // 20% inactive
+                    active: Math.round(course.value * 0.4), // 40% active
+                    total: course.value,
                   };
 
-                  const courseData = data[course];
                   const maxValue = 1000; // Y-axis max
-                  const barHeight = (courseData.total / maxValue) * 100;
+                  const barHeight = (data.total / maxValue) * 100;
 
                   return (
                     <div
-                      key={course}
+                      key={course.name}
                       className="flex-1 flex flex-col items-center"
                     >
                       {/* Stacked Bar */}
                       <div
-                        className="w-full max-w-16 relative"
+                        className="w-full max-w-8 sm:max-w-12 lg:max-w-16 relative"
                         style={{ height: `${barHeight}%` }}
                       >
                         {/* New (Orange) */}
                         <div
                           className="absolute bottom-0 w-full bg-orange-400"
                           style={{
-                            height: `${
-                              (courseData.new / courseData.total) * 100
-                            }%`,
+                            height: `${(data.new / data.total) * 100}%`,
                             zIndex: 3,
                           }}
                         ></div>
@@ -269,12 +258,8 @@ const AdminDashboardPage = () => {
                         <div
                           className="absolute bottom-0 w-full bg-blue-400"
                           style={{
-                            height: `${
-                              (courseData.inactive / courseData.total) * 100
-                            }%`,
-                            bottom: `${
-                              (courseData.new / courseData.total) * 100
-                            }%`,
+                            height: `${(data.inactive / data.total) * 100}%`,
+                            bottom: `${(data.new / data.total) * 100}%`,
                             zIndex: 2,
                           }}
                         ></div>
@@ -282,13 +267,9 @@ const AdminDashboardPage = () => {
                         <div
                           className="absolute bottom-0 w-full bg-blue-800"
                           style={{
-                            height: `${
-                              (courseData.active / courseData.total) * 100
-                            }%`,
+                            height: `${(data.active / data.total) * 100}%`,
                             bottom: `${
-                              ((courseData.new + courseData.inactive) /
-                                courseData.total) *
-                              100
+                              ((data.new + data.inactive) / data.total) * 100
                             }%`,
                             zIndex: 1,
                           }}
@@ -296,8 +277,11 @@ const AdminDashboardPage = () => {
                       </div>
 
                       {/* Course Label */}
-                      <span className="text-xs text-gray-600 mt-2 text-center">
-                        {course}
+                      <span className="text-xs text-gray-600 mt-2 text-center break-words">
+                        <span className="block">{course.name}</span>
+                        <span className="font-semibold">
+                          {course.value} enrolled
+                        </span>
                       </span>
                     </div>
                   );
@@ -311,7 +295,10 @@ const AdminDashboardPage = () => {
             </div>
 
             <div className="flex justify-end mt-4">
-              <button className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 text-sm font-medium">
+              <button
+                className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                onClick={() => router.push("/admin/learners")}
+              >
                 <span>View Learners</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
@@ -332,7 +319,7 @@ const AdminDashboardPage = () => {
             </select>
           </div>
 
-          <div className="flex items-center space-x-6">
+          <div className="grid items-center gap-6">
             {/* Donut Chart */}
             <div className="relative w-32 h-32">
               <svg
@@ -349,17 +336,8 @@ const AdminDashboardPage = () => {
                   strokeWidth="2"
                 />
 
-                {/* Chart segments - using realistic data from image */}
-                {[
-                  {
-                    name: "Digital Marketing",
-                    percentage: 38,
-                    color: "#3B82F6",
-                  },
-                  { name: "Data Analysis", percentage: 28, color: "#1F2937" },
-                  { name: "UI/UX Design", percentage: 17, color: "#6B7280" },
-                  { name: "Cyber Security", percentage: 17, color: "#1E40AF" },
-                ].map((segment, index) => {
+                {/* Chart segments - using dynamic data from API */}
+                {dashboardData.topCourses.map((segment, index) => {
                   const circumference = 2 * Math.PI * 15.9155;
                   let strokeDasharray = 0;
                   let strokeDashoffset = circumference;
@@ -370,28 +348,7 @@ const AdminDashboardPage = () => {
                     strokeDashoffset = circumference - strokeDasharray;
                   } else {
                     // Calculate cumulative percentage for proper positioning
-                    const cumulativePercentage = [
-                      {
-                        name: "Digital Marketing",
-                        percentage: 38,
-                        color: "#3B82F6",
-                      },
-                      {
-                        name: "Data Analysis",
-                        percentage: 28,
-                        color: "#1F2937",
-                      },
-                      {
-                        name: "UI/UX Design",
-                        percentage: 17,
-                        color: "#6B7280",
-                      },
-                      {
-                        name: "Cyber Security",
-                        percentage: 17,
-                        color: "#1E40AF",
-                      },
-                    ]
+                    const cumulativePercentage = dashboardData.topCourses
                       .slice(0, index)
                       .reduce((sum, item) => sum + item.percentage, 0);
 
@@ -419,32 +376,45 @@ const AdminDashboardPage = () => {
                   );
                 })}
               </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-bold text-gray-800">100%</span>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-2xl font-bold text-gray-800">
+                  {dashboardData.topCourses.reduce(
+                    (sum, course) => sum + course.percentage,
+                    0
+                  )}
+                  %
+                </span>
+                <span className="text-xs text-gray-600">
+                  {dashboardData.topCourses.reduce(
+                    (sum, course) => sum + course.value,
+                    0
+                  )}{" "}
+                  total
+                </span>
               </div>
             </div>
 
             {/* Legend */}
             <div className="space-y-3">
-              {[
-                { name: "UI/UX Design", color: "#6B7280" },
-                { name: "Digital Marketing", color: "#3B82F6" },
-                { name: "Cyber Security", color: "#1E40AF" },
-                { name: "Data Analysis", color: "#1F2937" },
-              ].map((item, index) => (
+              {dashboardData.topCourses.map((item, index) => (
                 <div key={index} className="flex items-center space-x-3">
                   <div
                     className="w-4 h-4 rounded-full"
                     style={{ backgroundColor: item.color }}
                   ></div>
-                  <span className="text-sm text-gray-600">{item.name}</span>
+                  <span className="text-sm text-gray-600">
+                    {item.name} ({item.percentage}% - {item.value} enrolled)
+                  </span>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="flex justify-end mt-4">
-            <button className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 text-sm font-medium">
+            <button
+              className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 text-sm font-medium"
+              onClick={() => router.push("/admin/courses")}
+            >
               <span>View Courses</span>
               <ArrowRight className="w-4 h-4" />
             </button>

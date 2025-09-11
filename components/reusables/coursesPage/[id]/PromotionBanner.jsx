@@ -3,10 +3,25 @@
 import { Button } from "@/components/ui/button";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
+import { useAuth } from "@/Context/auth";
+import { showErrorToast } from "@/helpers/toastUtil";
 
 const PromotionBanner = () => {
   const { id } = useParams();
   const router = useRouter();
+  const { auth } = useAuth();
+
+  const handleEnroll = () => {
+    // Check if user is authenticated
+    if (!auth) {
+      showErrorToast("Please log in to enroll in courses");
+      router.push("/login");
+      return;
+    }
+
+    // Navigate to payment page
+    router.push(`/courses/${id}/pay`);
+  };
 
   return (
     <div className="relative bg-pri10 w-[90%] mx-auto mb-[3rem] rounded z-40">
@@ -22,7 +37,7 @@ const PromotionBanner = () => {
 
         <Button
           className="px-6 py-2 rounded-xl bg-[#2FB3E3] text-pri1 font-medium header-button"
-          onClick={() => router.push(`/courses/${id}/pay`)}
+          onClick={handleEnroll}
         >
           Enroll for our physical class
         </Button>

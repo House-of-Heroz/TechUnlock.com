@@ -20,7 +20,7 @@ import ImageNine from "@/assets/course-page/feedback-8.jpg";
 import ImageTen from "@/assets/course-page/feedback-9.jpg";
 
 const reviews = {
-  "UI/UX": [
+  "UI/UX Design": [
     {
       name: "Bankole",
       review:
@@ -37,7 +37,7 @@ const reviews = {
         "I learned more than just tech skills here. I learned to be a better marketer and entrepreneur.",
     },
   ],
-  WEB: [
+  "Web Development": [
     {
       name: "Godwin",
       review:
@@ -54,7 +54,7 @@ const reviews = {
         "There are many other learning platforms, but TechUnlock will take your learning journey personal and see to it that you grow.",
     },
   ],
-  CYBER: [
+  Cybersecurity: [
     {
       name: "Christopher",
       review:
@@ -71,7 +71,7 @@ const reviews = {
         "It’s not just the training for me, it’s the collaboration, the opportunity, and the learning environment.",
     },
   ],
-  DM: [
+  "Digital Marketing": [
     {
       name: "Petra",
       review:
@@ -113,7 +113,7 @@ const FeedbackContainer = ({ course }) => {
   const reviewTwo = getRandomReview(course?.category);
 
   return (
-    <div className="relative mb-[2rem] lg:h-[60vh] lg:mb-[4rem]">
+    <div className="relative my-[2rem] lg:h-[60vh] lg:my-[4rem]">
       {/* <div className="absolute hidden lg:block -top-1/4 left-0 w-1/5 h-[60vh] overflow-hidden ">
         <Image
           src={angleDown}
@@ -141,13 +141,13 @@ const FeedbackContainer = ({ course }) => {
         <FeedbackCard
           course={course}
           image={
-            course?.category === "UI/UX"
+            course?.category === "UI/UX Design"
               ? ImageOne
-              : course?.category === "WEB"
+              : course?.category === "Web Development"
               ? ImageFour
-              : course?.category === "CYBER"
+              : course?.category === "Cybersecurity"
               ? ImageTwo
-              : course?.category === "DM"
+              : course?.category === "Digital Marketing"
               ? ImageThree
               : ImageFive
           }
@@ -157,13 +157,13 @@ const FeedbackContainer = ({ course }) => {
         <FeedbackCard
           course={course}
           image={
-            course?.category === "UI/UX"
+            course?.category === "UI/UX Design"
               ? ImageSix
-              : course?.category === "WEB"
+              : course?.category === "Web Development"
               ? ImageSeven
-              : course?.category === "CYBER"
+              : course?.category === "Cybersecurity"
               ? ImageEight
-              : course?.category === "DM"
+              : course?.category === "Digital Marketing"
               ? ImageNine
               : ImageTen
           }

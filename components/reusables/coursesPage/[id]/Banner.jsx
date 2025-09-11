@@ -22,28 +22,20 @@ import cyber from "@/assets/course-page/cyber.jpg";
 // DM
 import DM from "@/assets/course-page/DMCard.svg";
 
-export const categoryMap = {
-  CYBER: "Cybersecurity",
-  WEB: "Web Development",
-  DM: "Digital Marketing",
-  "UI/UX": "UI/UX Design",
-  AI: "Artificial Intelligence",
-};
-
 const Banner = ({ course }) => {
-  const fullCategoryName = categoryMap[course?.category] || course?.category;
+  const fullCategoryName = course?.category;
   return (
     <div className="">
       <div className="relative lg:h-[80vh] w-full lg:flex lg:items-end lg:justify-center bg-gradient-to-tr from-[#13485B] to-[#06212B]">
         <Image
           src={
-            course?.category === "UI/UX"
+            course?.category === "UI/UX Design"
               ? UIBanner
-              : course?.category === "WEB"
+              : course?.category === "Web Development"
               ? WebBanner
-              : course?.category === "CYBER"
+              : course?.category === "Cybersecurity"
               ? cyber
-              : course?.category === "DM"
+              : course?.category === "Digital Marketing"
               ? DM
               : AIBanner
           }

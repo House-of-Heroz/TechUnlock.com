@@ -662,7 +662,7 @@ export const getCourseDetailsForEditing = async (courseId) => {
   const token = await fetchToken();
   try {
     const response = await apiClient.get(
-      `${BASE_URL}/admin-app/courses/${courseId}/edit/`,
+      `${BASE_URL}/course/course-details/${courseId}/`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

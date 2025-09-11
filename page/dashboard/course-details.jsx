@@ -1141,7 +1141,7 @@ const CourseDetailsPage = ({ courseId }) => {
                       autoPlay
                       onTimeUpdate={handleVideoTimeUpdate}
                       onLoadedData={handleVideoLoad}
-                      className="h-full w-full object-contain"
+                      className="h-[60vh] w-full object-contain"
                       style={{
                         maxHeight: "100%",
                         maxWidth: "100%",

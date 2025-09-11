@@ -16,6 +16,7 @@ const adminNavLinks = [
     to: "/admin",
     iconActive: Grid,
     iconInactive: Grid,
+    roles: ["Super Admin", "Admin", "Trainer"], // All roles can access dashboard
   },
   {
     id: 2,
@@ -23,6 +24,7 @@ const adminNavLinks = [
     to: "/admin/courses",
     iconActive: BookOpen,
     iconInactive: BookOpen,
+    roles: ["Super Admin", "Admin", "Trainer"], // All roles can access courses
   },
   {
     id: 3,
@@ -30,6 +32,7 @@ const adminNavLinks = [
     to: "/admin/learners",
     iconActive: GraduationCap,
     iconInactive: GraduationCap,
+    roles: ["Super Admin", "Admin", "Trainer"], // All roles can access learners
   },
   {
     id: 4,
@@ -37,6 +40,7 @@ const adminNavLinks = [
     to: "/admin/feedback",
     iconActive: FileText,
     iconInactive: FileText,
+    roles: ["Super Admin", "Admin", "Trainer"], // All roles can access feedback
   },
   {
     id: 5,
@@ -44,6 +48,7 @@ const adminNavLinks = [
     to: "/admin/payment",
     iconActive: CreditCard,
     iconInactive: CreditCard,
+    roles: ["Super Admin", "Admin"], // Only Super Admin and Admin can access payment
   },
   {
     id: 6,
@@ -51,6 +56,7 @@ const adminNavLinks = [
     to: "/admin/notifications",
     iconActive: Bell,
     iconInactive: Bell,
+    roles: ["Super Admin", "Admin", "Trainer"], // All roles can access notifications
   },
   {
     id: 7,
@@ -58,6 +64,7 @@ const adminNavLinks = [
     to: "/admin/admin",
     iconActive: Users,
     iconInactive: Users,
+    roles: ["Super Admin"], // Only Super Admin can access admin management
   },
   {
     id: 8,
@@ -65,6 +72,7 @@ const adminNavLinks = [
     to: "/admin/settings",
     iconActive: Settings,
     iconInactive: Settings,
+    roles: ["Super Admin", "Admin", "Trainer"], // All roles can access settings
   },
 ];
 

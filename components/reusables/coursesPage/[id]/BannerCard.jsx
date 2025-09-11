@@ -28,25 +28,30 @@ import DMCard from "@/assets/course-page/DMCard.svg";
 import AI from "@/assets/course-page/AICard.svg";
 import { Check } from "lucide-react";
 import { useCourses } from "@/Context/courses";
+import { useAuth } from "@/Context/auth";
+import { enrollInCourse } from "@/services/course";
+import { showErrorToast, showSuccessToast } from "@/helpers/toastUtil";
 
 export const BannerCard = ({ course }) => {
   const { courses } = useCourses();
+  const { auth } = useAuth();
   const [Courses, setCourses] = React.useState();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState("onsite");
+  const [isEnrolling, setIsEnrolling] = useState(false);
   const router = useRouter();
 
   const Images = [
     {
       id: 1,
       image:
-        course?.category === "UI/UX"
+        course?.category === "UI/UX Design"
           ? UICard
-          : course?.category === "WEB"
+          : course?.category === "Web Development"
           ? webDev
-          : course?.category === "CYBER"
+          : course?.category === "Cybersecurity"
           ? cyberSec
-          : course?.category === "DM"
+          : course?.category === "Digital Marketing"
           ? DMCard
           : AI,
       option: "pace",
@@ -81,6 +86,54 @@ export const BannerCard = ({ course }) => {
 
   const getLabelClass = (value) => {
     return selectedOption === value ? "text-gray-800 " : "text-white ";
+  };
+
+  // Check if course is free and beginner level
+  const isFreeBeginner =
+    !course?.is_paid && course?.difficulty?.toLowerCase() === "beginner";
+
+  // Handle enrollment with authentication check
+  const handleEnrollment = async () => {
+    // Check if user is authenticated
+    if (!auth) {
+      showErrorToast("Please log in to enroll in courses");
+      router.push("/login");
+      return;
+    }
+
+    // Check if already enrolled
+    const isAlreadyEnrolled =
+      course?.id ===
+      Courses?.enrolled_courses?.find((item) => item?.id === course?.id);
+    if (isAlreadyEnrolled) {
+      showSuccessToast("You are already enrolled in this course");
+      router.push(`/dashboard/courses/${course.id}/watch`);
+      return;
+    }
+
+    try {
+      setIsEnrolling(true);
+
+      // For free beginner courses, enroll directly
+      if (isFreeBeginner) {
+        const result = await enrollInCourse(course.id);
+        showSuccessToast(result.message || "Successfully enrolled in course!");
+        router.push(`/dashboard/courses/${course.id}/watch`);
+      } else {
+        // For paid courses or non-beginner courses, go to payment page
+        router.push(`/courses/${course.id}/pay`);
+      }
+    } catch (error) {
+      console.error("Error enrolling in course:", error);
+      if (error.message === "AUTH_REQUIRED") {
+        showErrorToast("Please log in to enroll in courses");
+        router.push("/login");
+      } else {
+        showErrorToast(error.message || "Failed to enroll in course");
+      }
+    } finally {
+      setIsEnrolling(false);
+    }
   };
 
   return (
@@ -164,17 +217,22 @@ export const BannerCard = ({ course }) => {
       {/* Buttons */}
       <div className="w-full mt-4 px-4 pb-3">
         <Button
-          onClick={() => router.push(`/courses/${course.id}/pay`)}
+          onClick={handleEnrollment}
           className="w-full"
           disabled={
+            isEnrolling ||
             course?.id ===
-            Courses?.enrolled_courses?.find((item) => item?.id === course?.id)
+              Courses?.enrolled_courses?.find((item) => item?.id === course?.id)
           }
         >
-          {course?.id ===
-          Courses?.enrolled_courses?.find((item) => item?.id === course?.id)
+          {isEnrolling
+            ? "Enrolling..."
+            : course?.id ===
+              Courses?.enrolled_courses?.find((item) => item?.id === course?.id)
             ? "Already enrolled"
-            : "Apply Now"}
+            : isFreeBeginner
+            ? "Enroll Now (Free)"
+            : "Enroll Now"}
         </Button>
         {/* <Button variant="outline">Save for Later</Button> */}
       </div>

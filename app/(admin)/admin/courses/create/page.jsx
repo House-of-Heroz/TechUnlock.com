@@ -326,7 +326,7 @@ const CreateCoursePage = () => {
   // Check if we're in edit mode from URL params
   useEffect(() => {
     const editModule = searchParams.get("editModule");
-    const courseId = searchParams.get("courseId");
+    const courseId = searchParams.get("id");
     const editCourse = searchParams.get("editCourse");
 
     if (editModule && courseId) {
@@ -421,6 +421,7 @@ const CreateCoursePage = () => {
         duration: `${formData.estimatedTime} hours`,
         instructor: formData.instructor,
         category: formData.category,
+        difficulty: formData.difficulty,
         is_published: true,
         is_paid: trainingFeeData.trainingType === "paid",
         price:
@@ -642,6 +643,15 @@ const CreateCoursePage = () => {
         amount: courseData.price?.toString() || "",
       });
 
+      // Mark all steps as completed for edit mode
+      setSteps([
+        { id: 1, name: "Course Basics", active: true, completed: true },
+        { id: 2, name: "Module & Quiz Setup", active: false, completed: true },
+        { id: 3, name: "Badge Setup", active: false, completed: true },
+        { id: 4, name: "Community Setup", active: false, completed: true },
+        { id: 5, name: "Training fee Setup", active: false, completed: true },
+      ]);
+
       showSuccessToast("Course data loaded for editing");
     } catch (error) {
       console.error("Error fetching course data:", error);
@@ -696,6 +706,15 @@ const CreateCoursePage = () => {
       // Replace the first module with the fetched data
       setModules([transformedModule]);
       setCurrentModuleIndex(0);
+
+      // Mark steps as completed for module edit mode
+      setSteps([
+        { id: 1, name: "Course Basics", active: false, completed: true },
+        { id: 2, name: "Module & Quiz Setup", active: true, completed: true },
+        { id: 3, name: "Badge Setup", active: false, completed: true },
+        { id: 4, name: "Community Setup", active: false, completed: true },
+        { id: 5, name: "Training fee Setup", active: false, completed: true },
+      ]);
 
       showSuccessToast("Module data loaded for editing");
     } catch (error) {
@@ -895,7 +914,13 @@ const CreateCoursePage = () => {
 
   // Handle step navigation
   const handleStepClick = (stepId) => {
-    // Only allow navigation to completed steps or current step
+    // For edit mode, allow navigation to any step
+    if (isCourseEditMode || isEditMode) {
+      setCurrentStep(stepId);
+      return;
+    }
+
+    // For create mode, only allow navigation to completed steps or current step
     if (
       stepId <= currentStep ||
       steps.find((s) => s.id === stepId)?.completed
@@ -1225,6 +1250,9 @@ const CreateCoursePage = () => {
         short_description: formData.shortDescription,
         description: formData.detailedDescription,
         duration: `${formData.estimatedTime} hours`,
+        instructor: formData.instructor,
+        category: formData.category,
+        difficulty: formData.difficulty,
         is_published: true,
         is_paid: trainingFeeData.trainingType === "paid",
         price:
@@ -1315,31 +1343,34 @@ const CreateCoursePage = () => {
       </div>
 
       {/* Step Navigation */}
-      {!isEditMode && !isCourseEditMode && (
-        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
-          {steps.map((step) => (
-            <button
-              key={step.id}
-              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                step.id === currentStep
-                  ? "bg-[#13485B] text-white"
-                  : step.completed
-                  ? "bg-green-100 text-green-700 hover:bg-green-200"
-                  : "text-gray-600 hover:text-gray-800"
-              }`}
-              onClick={() => handleStepClick(step.id)}
-              disabled={step.id > currentStep && !step.completed}
-            >
-              <div className="flex items-center justify-center space-x-2">
-                {step.completed && step.id < currentStep && (
-                  <span className="text-green-600">✓</span>
-                )}
-                <span>{step.name}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+        {steps.map((step) => (
+          <button
+            key={step.id}
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              step.id === currentStep
+                ? "bg-[#13485B] text-white"
+                : step.completed
+                ? "bg-green-100 text-green-700 hover:bg-green-200"
+                : "text-gray-600 hover:text-gray-800"
+            }`}
+            onClick={() => handleStepClick(step.id)}
+            disabled={
+              !isCourseEditMode &&
+              !isEditMode &&
+              step.id > currentStep &&
+              !step.completed
+            }
+          >
+            <div className="flex items-center justify-center space-x-2">
+              {step.completed && step.id < currentStep && (
+                <span className="text-green-600">✓</span>
+              )}
+              <span>{step.name}</span>
+            </div>
+          </button>
+        ))}
+      </div>
 
       {/* Course Basics Form */}
       {currentStep === 1 && (
@@ -2361,13 +2392,21 @@ const CreateCoursePage = () => {
       )}
 
       {/* Navigation Buttons */}
-      {!isEditMode && !isCourseEditMode && (
+      {!isEditMode && (
         <>
           {currentStep === 1 && (
-            <div className="flex justify-end">
+            <div className="flex justify-between">
+              {isCourseEditMode && (
+                <button
+                  onClick={() => router.back()}
+                  className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </button>
+              )}
               <button
                 onClick={handleContinue}
-                className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors ml-auto"
               >
                 Continue to module →
               </button>
@@ -2375,10 +2414,18 @@ const CreateCoursePage = () => {
           )}
 
           {currentStep === 2 && (
-            <div className="flex justify-end">
+            <div className="flex justify-between">
+              {isCourseEditMode && (
+                <button
+                  onClick={() => router.back()}
+                  className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </button>
+              )}
               <button
                 onClick={handleContinue}
-                className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors ml-auto"
               >
                 Continue to Badge Setup →
               </button>
@@ -2386,10 +2433,18 @@ const CreateCoursePage = () => {
           )}
 
           {currentStep === 3 && (
-            <div className="flex justify-end">
+            <div className="flex justify-between">
+              {isCourseEditMode && (
+                <button
+                  onClick={() => router.back()}
+                  className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </button>
+              )}
               <button
                 onClick={handleContinue}
-                className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors ml-auto"
               >
                 Continue to Community →
               </button>
@@ -2397,10 +2452,18 @@ const CreateCoursePage = () => {
           )}
 
           {currentStep === 4 && (
-            <div className="flex justify-end">
+            <div className="flex justify-between">
+              {isCourseEditMode && (
+                <button
+                  onClick={() => router.back()}
+                  className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </button>
+              )}
               <button
                 onClick={handleContinue}
-                className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors ml-auto"
               >
                 Continue to Training fee →
               </button>
@@ -2408,19 +2471,29 @@ const CreateCoursePage = () => {
           )}
 
           {currentStep === 5 && (
-            <div className="flex justify-end">
+            <div className="flex justify-between">
+              {isCourseEditMode && (
+                <button
+                  onClick={() => router.back()}
+                  className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </button>
+              )}
               <button
-                onClick={handlePublishCourse}
-                className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                onClick={
+                  isCourseEditMode ? handleUpdateCourse : handlePublishCourse
+                }
+                className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors ml-auto"
               >
-                Publish Course →
+                {isCourseEditMode ? "Update Course →" : "Publish Course →"}
               </button>
             </div>
           )}
         </>
       )}
 
-      {/* Edit Mode Navigation */}
+      {/* Module Edit Mode Navigation */}
       {isEditMode && currentStep === 2 && (
         <div className="flex justify-between">
           <button
@@ -2434,24 +2507,6 @@ const CreateCoursePage = () => {
             className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Update Module
-          </button>
-        </div>
-      )}
-
-      {/* Course Edit Mode Navigation */}
-      {isCourseEditMode && currentStep === 5 && (
-        <div className="flex justify-between">
-          <button
-            onClick={() => router.back()}
-            className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleUpdateCourse}
-            className="bg-[#13485B] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Update Course
           </button>
         </div>
       )}
