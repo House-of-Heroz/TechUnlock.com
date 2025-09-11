@@ -951,10 +951,10 @@ const CourseDetailsPage = ({ courseId }) => {
           <div className="p-4 border-t border-gray-200 space-y-5">
             <button
               onClick={handleJoinCommunity}
-              className="w-full flex items-center flex-1 px-4 py-2 bg-white text-primary shadow rounded-lg hover:bg-primary hover:text-white transition-colors"
+              className="w-full flex items-center flex-1 px-4 py-2 bg-white text-primary shadow rounded-lg hover:bg-primary hover:text-white transition-colors text-sm"
             >
               <Users className="w-4 h-4 mr-2" />
-              {courseData?.community_link_detail?.description}
+              {courseData?.community_link_detail?.title}
             </button>
             <button className="w-full flex items-center flex-1 px-4 py-2 bg-white text-primary shadow rounded-lg hover:bg-primary hover:text-white transition-colors">
               <MessageCircle className="w-4 h-4 mr-2" />
@@ -1469,36 +1469,112 @@ const CourseDetailsPage = ({ courseId }) => {
                       </div>
                     ))}
 
-                    {/* Complete Module Button - Show after quiz completion */}
-                    {selectedModule && !selectedModule.is_locked && (
-                      <div className="mt-6 pt-6 border-t border-gray-200">
-                        <div className="flex items-center gap-6 justify-between">
-                          <div>
-                            <h4 className="font-semibold text-gray-800 mb-2">
-                              Module Progress
-                            </h4>
-                            <p className="text-sm text-gray-600 break-words">
-                              {selectedModule.quizzes.length > 0
-                                ? "Complete all videos and pass the quiz to finish this module"
-                                : "Complete all videos to finish this module"}
-                            </p>
-                          </div>
-
-                          <button
-                            onClick={handleCompleteModule}
-                            disabled={!canCompleteModule()}
-                            className={`px-3 py-3 rounded-lg shadow-md whitespace-nowrap font-medium transition-colors flex items-center space-x-2 ${
-                              canCompleteModule()
-                                ? "bg-white text-primary hover:bg-white/70"
-                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    {/* Quiz Results Actions - Show after quiz completion */}
+                    <div className="mt-6 pt-6 border-t border-gray-200">
+                      <div className="text-center mb-6">
+                        <div
+                          className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
+                            quizScore >= 2 ? "bg-green-100" : "bg-red-100"
+                          }`}
+                        >
+                          <span
+                            className={`text-2xl font-bold ${
+                              quizScore >= 2 ? "text-green-600" : "text-red-600"
                             }`}
                           >
-                            {/* <CheckCircle className="w-5 h-5" /> */}
-                            <span>Complete Module</span>
-                          </button>
+                            {quizScore}/{selectedModule.quizzes.length}
+                          </span>
                         </div>
+                        <h3
+                          className={`text-xl font-semibold mb-2 ${
+                            quizScore >= 2 ? "text-green-600" : "text-red-600"
+                          }`}
+                        >
+                          {quizScore >= 2 ? "Congratulations!" : "Try Again"}
+                        </h3>
+                        <p className="text-gray-600">
+                          {quizScore >= 2
+                            ? `You scored ${quizScore} out of ${selectedModule.quizzes.length}. You can now proceed to the next module!`
+                            : `You scored ${quizScore} out of ${selectedModule.quizzes.length}. You need at least 2 correct answers to pass.`}
+                        </p>
                       </div>
-                    )}
+
+                      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        {quizScore < 2 ? (
+                          // Retry button for failing scores
+                          <button
+                            onClick={() => {
+                              setShowQuizResults(false);
+                              setQuizAnswers({});
+                              setQuizScore(0);
+                            }}
+                            className="px-6 py-3 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors flex items-center justify-center space-x-2"
+                          >
+                            <PlayCircle className="w-5 h-5" />
+                            <span>Retry Quiz</span>
+                          </button>
+                        ) : (
+                          // Next module button for passing scores
+                          <button
+                            onClick={() => {
+                              // Mark quiz as completed
+                              markComplete(`quiz-${currentQuiz.id}`);
+                              setShowQuizResults(false);
+                              setCurrentQuiz(null);
+
+                              // Check if we can complete the module
+                              if (canCompleteModule()) {
+                                handleCompleteModule();
+                              } else {
+                                // Navigate to next module if available
+                                const currentModuleIndex =
+                                  courseData.modules.findIndex(
+                                    (module) => module.id === selectedModule.id
+                                  );
+                                const nextModule =
+                                  courseData.modules[currentModuleIndex + 1];
+
+                                if (nextModule && !nextModule.is_locked) {
+                                  // Navigate to next module
+                                  setSelectedModule(nextModule);
+                                  setSelectedVideo(
+                                    nextModule.videos[0] || null
+                                  );
+                                  setExpandedModules((prev) => ({
+                                    ...prev,
+                                    [nextModule.id]: true,
+                                  }));
+                                  showSuccessToast(
+                                    "Quiz completed! Moving to next module."
+                                  );
+                                } else {
+                                  // Just close quiz and let user continue with videos
+                                  showSuccessToast(
+                                    "Quiz completed! You can now continue with the module."
+                                  );
+                                }
+                              }
+                            }}
+                            className="px-6 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center space-x-2"
+                          >
+                            <ChevronRight className="w-5 h-5" />
+                            <span>Continue to Next Module</span>
+                          </button>
+                        )}
+
+                        {/* Back to module button */}
+                        <button
+                          onClick={() => {
+                            setShowQuizResults(false);
+                            setCurrentQuiz(null);
+                          }}
+                          className="px-6 py-3 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors flex items-center justify-center space-x-2"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                          <span>Back to Module</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

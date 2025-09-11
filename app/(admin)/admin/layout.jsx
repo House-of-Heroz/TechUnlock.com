@@ -3,8 +3,17 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/Context/auth";
 import { useRouter } from "next/navigation";
+import { removeToken } from "@/helpers/removeToken";
 import Link from "next/link";
-import { Search, Bell, ChevronDown, ChevronLeft, Menu, X } from "lucide-react";
+import {
+  Search,
+  Bell,
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  Menu,
+  X,
+} from "lucide-react";
 import AdminNavigation from "@/components/reusables/Layout/components/AdminNavigation";
 import Logo from "@/components/reusables/Layout/components/Logo";
 import AdminLogo from "@/components/reusables/Layout/components/admin-logo";
@@ -15,6 +24,7 @@ const AdminLayout = ({ children }) => {
   const router = useRouter();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const userType =
     typeof auth?.user_type === "string" ? auth.user_type : undefined;
   const isAdmin =
@@ -33,6 +43,15 @@ const AdminLayout = ({ children }) => {
       router.replace("/dashboard");
     }
   }, [auth, isAdmin, router]);
+
+  const handleDropDown = () => {
+    setProfileOpen(!profileOpen);
+  };
+
+  const logout = async () => {
+    await removeToken();
+    router.push("/login");
+  };
 
   if (!isAdmin) return null;
 
@@ -130,11 +149,53 @@ const AdminLayout = ({ children }) => {
                       {auth?.last_name?.charAt(0)}
                     </span>
                   </div>
-                  <div className="hidden sm:flex items-center space-x-1">
-                    <span className="text-sm font-medium text-gray-700">
-                      {auth?.first_name} {auth?.last_name}
-                    </span>
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
+
+                  <div
+                    className="relative cursor-pointer"
+                    onClick={handleDropDown}
+                  >
+                    <div className="flex items-center justify-between bg-white rounded-md border border-gray-300 p-2 sm:p-3 shadow-md text-xs sm:text-sm min-w-[120px] sm:min-w-[200px]">
+                      <p className="font-semibold line-clamp-1 text-ellipsis text-[#344054] hidden sm:block">
+                        Welcome, {auth?.first_name} {auth?.last_name}
+                      </p>
+                      <p className="font-semibold line-clamp-1 text-ellipsis text-[#344054] sm:hidden">
+                        {auth?.first_name} {auth?.last_name}
+                      </p>
+                      {profileOpen ? (
+                        <ChevronUp
+                          size={16}
+                          className="sm:w-[18px] sm:h-[18px] flex-shrink-0"
+                        />
+                      ) : (
+                        <ChevronDown
+                          size={16}
+                          className="sm:w-[18px] sm:h-[18px] flex-shrink-0"
+                        />
+                      )}
+                    </div>
+
+                    {profileOpen && (
+                      <div className="absolute right-0 mt-2 w-full bg-white border rounded-md text-xs sm:text-sm shadow-md z-10">
+                        <Link
+                          href="/profile"
+                          className="block py-2 pl-4 hover:bg-gray-50 transition-colors"
+                        >
+                          Profile
+                        </Link>
+                        <Link
+                          href="/admin/settings"
+                          className="block py-2 pl-4 hover:bg-gray-50 transition-colors"
+                        >
+                          Settings
+                        </Link>
+                        <button
+                          onClick={logout}
+                          className="w-full text-left py-2 pl-4 hover:bg-gray-50 transition-colors"
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

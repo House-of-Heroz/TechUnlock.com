@@ -8,30 +8,36 @@ const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="relative h-screen w-full">
-      <div className="flex items-start h-full w-full">
-        {/* Mobile sidebar overlay */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-
-        {/* Sidebar */}
+    <div className="relative h-screen w-full bg-gray-50">
+      {/* Mobile Menu Overlay */}
+      {sidebarOpen && (
         <div
-          className={`fixed lg:static z-50 transition-transform duration-300 ease-in-out ${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <div className="flex items-start h-full w-full">
+        {/* Sidebar */}
+        <aside
+          className={`fixed h-full bg-sec10 flex items-center text-pri1 transition-all duration-300 z-50 ${
+            sidebarOpen
+              ? "w-64 translate-x-0"
+              : "-translate-x-full lg:translate-x-0 lg:w-1/5"
           }`}
         >
           <Sidebar onClose={() => setSidebarOpen(false)} />
-        </div>
+        </aside>
 
-        {/* Main content */}
+        {/* Main Content */}
         <div className="w-full lg:w-4/5 lg:ml-auto bg-[#FCFCFD]">
-          <Header onMenuClick={() => setSidebarOpen(true)} />
+          {/* Header */}
+          <header className="bg-pri1 border-b border-gray-200 px-4 sm:px-6 py-4">
+            <Header onMenuClick={() => setSidebarOpen(true)} />
+          </header>
 
-          <div className="relative p-3 sm:p-5 w-full h-[calc(100vh-80px)] top-20 bg-[#FCFCFD] overflow-auto">
+          {/* Page Content */}
+          <div className="relative p-4 sm:p-6 w-full h-[calc(100vh-80px)] bg-[#FCFCFD] overflow-auto">
             {children}
           </div>
         </div>

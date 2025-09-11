@@ -31,62 +31,66 @@ const Header = ({ onMenuClick }) => {
   };
 
   return (
-    <div className="fixed w-full lg:w-4/5 bg-pri1 pr-4 lg:pr-8 z-20">
-      <div className="flex justify-between w-full items-center">
+    <div className="w-full">
+      <div className="flex items-center justify-between w-full">
         {/* Mobile menu button */}
         <button
-          className="lg:hidden p-2 text-white hover:bg-white/10 rounded-md"
+          className="lg:hidden p-2 text-white hover:bg-white/10 rounded-md transition-colors"
           onClick={onMenuClick}
         >
           <Menu size={24} />
         </button>
 
         {/* Search bar - hidden on mobile, visible on larger screens */}
-        <div className="hidden lg:flex w-3/5 justify-end items-center ml-auto">
+        <div className="hidden lg:flex flex-1 max-w-md mx-4">
           <SearchBar setData={setData} />
         </div>
 
-        <div className="flex items-center gap-x-2 lg:gap-x-3 w-full lg:w-2/5">
-          <div className="relative flex items-center gap-x-2 lg:gap-x-3 w-full lg:w-3/5 ml-auto">
-            <span className="h-8 w-8 lg:h-10 lg:w-10 p-1 lg:p-2 text-sm lg:text-lg text-pri1 font-semibold bg-[#268FB6] rounded-full flex items-center justify-center">
+        {/* User Profile */}
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="relative flex items-center space-x-2 sm:space-x-3">
+            <span className="h-8 w-8 sm:h-10 sm:w-10 text-sm sm:text-lg text-pri1 font-semibold bg-[#268FB6] rounded-full flex items-center justify-center">
               {initials}
             </span>
 
-            <div
-              className="relative cursor-pointer w-full"
-              onClick={handleDropDown}
-            >
-              <div className="flex items-center justify-between bg-white rounded-md border border-pri1 w-full p-2 lg:p-3 shadow-md text-xs lg:text-sm">
-                <p className="font-semibold w-full line-clamp-1 text-ellipsis text-[#344054] hidden sm:block">
+            <div className="relative cursor-pointer" onClick={handleDropDown}>
+              <div className="flex items-center justify-between bg-white rounded-md border border-pri1 p-2 sm:p-3 shadow-md text-xs sm:text-sm min-w-[120px] sm:min-w-[200px]">
+                <p className="font-semibold line-clamp-1 text-ellipsis text-[#344054] hidden sm:block">
                   Welcome, {fullName}
                 </p>
-                <p className="font-semibold w-full line-clamp-1 text-ellipsis text-[#344054] sm:hidden">
+                <p className="font-semibold line-clamp-1 text-ellipsis text-[#344054] sm:hidden">
                   {fullName}
                 </p>
                 {profileOpen ? (
-                  <ChevronUp size={16} className="lg:w-[18px] lg:h-[18px]" />
+                  <ChevronUp
+                    size={16}
+                    className="sm:w-[18px] sm:h-[18px] flex-shrink-0"
+                  />
                 ) : (
-                  <ChevronDown size={16} className="lg:w-[18px] lg:h-[18px]" />
+                  <ChevronDown
+                    size={16}
+                    className="sm:w-[18px] sm:h-[18px] flex-shrink-0"
+                  />
                 )}
               </div>
 
               {profileOpen && (
-                <div className="absolute right-0 mt-2 w-full bg-white border rounded-md text-xs lg:text-sm shadow-md z-10">
+                <div className="absolute right-0 mt-2 w-full bg-white border rounded-md text-xs sm:text-sm shadow-md z-10">
                   <Link
                     href="/profile"
-                    className="block py-2 pl-4 hover:bg-gray-50"
+                    className="block py-2 pl-4 hover:bg-gray-50 transition-colors"
                   >
                     Profile
                   </Link>
                   <Link
                     href="/dashboard/settings"
-                    className="block py-2 pl-4 hover:bg-gray-50"
+                    className="block py-2 pl-4 hover:bg-gray-50 transition-colors"
                   >
                     Settings
                   </Link>
                   <button
                     onClick={logout}
-                    className="w-full text-left py-2 pl-4 hover:bg-gray-50"
+                    className="w-full text-left py-2 pl-4 hover:bg-gray-50 transition-colors"
                   >
                     Logout
                   </button>
