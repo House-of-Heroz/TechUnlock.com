@@ -15,7 +15,7 @@ export default function DashboardCourseWatchRoute() {
   const params = useParams();
   const router = useRouter();
   const search = useSearchParams();
-  const { enrolledCourses } = useCourses();
+  const { enrolledCourses, fetchEnrolledCourses } = useCourses();
   const { id } = params || {};
   const [loading, setLoading] = useState(true);
   const [isEnrolled, setIsEnrolled] = useState(false);
@@ -34,9 +34,16 @@ export default function DashboardCourseWatchRoute() {
         console.log("Enrolled courses from context:", enrolledCourses);
         console.log("Is enrolled from context:", isEnrolledFromContext);
 
-        // First check enrollment from context (more reliable)
-        if (isEnrolledFromContext) {
-          console.log("User is enrolled via context");
+        // First refresh enrolled courses to ensure we have the latest data
+        await fetchEnrolledCourses();
+
+        // Check enrollment from context after refresh
+        const isEnrolledAfterRefresh = enrolledCourses?.some(
+          (enrolledCourse) => enrolledCourse.id === parseInt(id)
+        );
+
+        if (isEnrolledAfterRefresh) {
+          console.log("User is enrolled via context after refresh");
           setIsEnrolled(true);
           setLoading(false);
           return;

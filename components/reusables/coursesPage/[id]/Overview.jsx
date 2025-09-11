@@ -21,7 +21,7 @@ import { useState } from "react";
 const Overview = ({ course }) => {
   const router = useRouter();
   const { auth } = useAuth();
-  const { enrolledCourses } = useCourses();
+  const { enrolledCourses, fetchEnrolledCourses } = useCourses();
   const [isEnrolling, setIsEnrolling] = useState(false);
 
   // Check if course is free and beginner level
@@ -56,6 +56,10 @@ const Overview = ({ course }) => {
       if (isFreeBeginner) {
         const result = await enrollInCourse(course.id);
         showSuccessToast(result.message || "Successfully enrolled in course!");
+
+        // Refresh enrolled courses in context
+        await fetchEnrolledCourses();
+
         router.push(`/dashboard/courses/${course.id}/watch`);
       } else {
         // For paid courses or non-beginner courses, go to payment page

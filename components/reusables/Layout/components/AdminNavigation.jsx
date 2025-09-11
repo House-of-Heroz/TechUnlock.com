@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-const AdminNavigation = ({ userRole }) => {
+const AdminNavigation = ({ userRole, sidebarCollapsed }) => {
   const [openLinks, setOpenLinks] = useState({});
   const pathname = usePathname();
 
@@ -48,25 +48,29 @@ const AdminNavigation = ({ userRole }) => {
                 >
                   <Link
                     href={link.to}
-                    className="flex items-center no-underline w-full"
+                    className={`flex items-center no-underline ${
+                      sidebarCollapsed ? "justify-center" : "w-full"
+                    }`}
                     activeclassname="font-bold"
                   >
                     <link.iconActive
-                      className={`mr-6 ${
+                      className={`${sidebarCollapsed ? "mr-0" : "mr-6"} ${
                         isActive ? "text-white" : "text-[#13485B]	"
                       }`}
                     />
-                    <span
-                      className={
-                        isActive
-                          ? "text-white font-medium"
-                          : "text-[#13485B] font-medium"
-                      }
-                    >
-                      {link.name}
-                    </span>
+                    {!sidebarCollapsed && (
+                      <span
+                        className={
+                          isActive
+                            ? "text-white font-medium"
+                            : "text-[#13485B] font-medium"
+                        }
+                      >
+                        {link.name}
+                      </span>
+                    )}
                   </Link>
-                  {link.children && (
+                  {link.children && !sidebarCollapsed && (
                     <span
                       className={`ml-2 ${
                         isActive ? "text-white" : "text-[#13485B]"
@@ -122,23 +126,27 @@ const AdminNavigation = ({ userRole }) => {
               >
                 <Link
                   href={link.to}
-                  className="flex items-center no-underline w-full"
+                  className={`flex items-center no-underline ${
+                    sidebarCollapsed ? "justify-center" : "w-full"
+                  }`}
                   activeclassname="font-bold"
                 >
                   <link.iconActive
-                    className={`mr-6 ${
+                    className={`${sidebarCollapsed ? "mr-0" : "mr-6"} ${
                       isActive ? "text-white" : "text-[#13485B]"
                     }`}
                   />
-                  <span
-                    className={
-                      isActive
-                        ? "text-white font-medium"
-                        : "text-[#13485B] font-medium"
-                    }
-                  >
-                    {link.name}
-                  </span>
+                  {!sidebarCollapsed && (
+                    <span
+                      className={
+                        isActive
+                          ? "text-white font-medium"
+                          : "text-[#13485B] font-medium"
+                      }
+                    >
+                      {link.name}
+                    </span>
+                  )}
                 </Link>
               </div>
             );

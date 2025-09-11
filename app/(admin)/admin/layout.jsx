@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   Menu,
   X,
+  Lock,
 } from "lucide-react";
 import AdminNavigation from "@/components/reusables/Layout/components/AdminNavigation";
 import Logo from "@/components/reusables/Layout/components/Logo";
@@ -69,7 +70,7 @@ const AdminLayout = ({ children }) => {
         {/* Sidebar */}
         <aside
           className={`fixed h-full bg-[#EAF7FC] flex items-center text-pri1 transition-all duration-300 z-50 ${
-            sidebarCollapsed ? "w-16 lg:w-16" : "w-80 lg:w-1/5"
+            sidebarCollapsed ? "w-16 lg:w-24" : "w-80 lg:w-80"
           } ${
             mobileMenuOpen
               ? "translate-x-0"
@@ -80,7 +81,13 @@ const AdminLayout = ({ children }) => {
             <div className="grid gap-y-10">
               {/* Logo */}
               <div className="flex items-center justify-between w-full">
-                <AdminLogo />
+                {sidebarCollapsed ? (
+                  <div className="w-5/6 mx-auto">
+                    <Lock className="text-sec10 font-bold" />
+                  </div>
+                ) : (
+                  <AdminLogo />
+                )}
                 {/* Mobile Close Button */}
                 <button
                   onClick={() => setMobileMenuOpen(false)}
@@ -102,8 +109,13 @@ const AdminLayout = ({ children }) => {
               </div>
 
               {/* Navigation */}
-              <div className="w-5/6 mx-auto">
-                <AdminNavigation userRole={userType} />
+              <div
+                className={`${sidebarCollapsed ? "w-5/6" : "w-5/6"} mx-auto`}
+              >
+                <AdminNavigation
+                  userRole={userType}
+                  sidebarCollapsed={sidebarCollapsed}
+                />
               </div>
             </div>
           </div>
@@ -111,8 +123,8 @@ const AdminLayout = ({ children }) => {
 
         {/* Main Content */}
         <div
-          className={`w-full lg:w-4/5 bg-[#FCFCFD] transition-all duration-300 ${
-            sidebarCollapsed ? "lg:ml-16" : "lg:ml-[20%]"
+          className={`w-full bg-[#FCFCFD] transition-all duration-300 ${
+            sidebarCollapsed ? "lg:ml-24" : "lg:ml-80"
           }`}
         >
           {/* Header */}

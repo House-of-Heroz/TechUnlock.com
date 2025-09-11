@@ -685,7 +685,7 @@ const CourseDetailsPage = ({ courseId }) => {
   }
 
   return (
-    <div className="">
+    <div className="max-w-7xl mx-auto px-4 py-6">
       <style jsx>{`
         video::-webkit-media-controls {
           display: flex !important;
@@ -820,7 +820,7 @@ const CourseDetailsPage = ({ courseId }) => {
               <div key={module.id} className="border-b border-gray-100">
                 <button
                   onClick={() => toggleModule(module.id)}
-                  className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50"
+                  className="w-full px-4 py-3 flex items-start justify-between hover:bg-gray-50"
                 >
                   <div className="flex items-center">
                     <div className="flex items-center mr-3">
@@ -838,7 +838,7 @@ const CourseDetailsPage = ({ courseId }) => {
                       <h3 className="font-medium text-gray-800">
                         {module.title}
                       </h3>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 line-clamp-3">
                         {module.description}
                       </p>
                     </div>
@@ -1131,25 +1131,24 @@ const CourseDetailsPage = ({ courseId }) => {
           {!showCourseCompletion && !showBadgeEarned && selectedVideo && (
             <>
               {/* Video Player */}
-              <div className="relative bg-gradient-to-br from-blue-900 via-purple-900 to-blue-800 border border-gray-200 rounded-lg overflow-hidden">
-                <div className="relative aspect-video h-72 flex items-center justify-center">
-                  <div className="text-center w-full h-full relative">
-                    <video
-                      ref={setVideoRef}
-                      src={selectedVideo.video_url}
-                      controls
-                      autoPlay
-                      onTimeUpdate={handleVideoTimeUpdate}
-                      onLoadedData={handleVideoLoad}
-                      className="h-[60vh] w-full object-contain"
-                      style={{
-                        maxHeight: "100%",
-                        maxWidth: "100%",
-                        zIndex: 20,
-                        position: "relative",
-                      }}
-                    />
-                  </div>
+
+              <div className="relative h-72 flex items-center justify-center">
+                <div className="text-center w-full h-[60vh] relative">
+                  <video
+                    ref={setVideoRef}
+                    src={selectedVideo.video_url}
+                    controls
+                    autoPlay
+                    onTimeUpdate={handleVideoTimeUpdate}
+                    onLoadedData={handleVideoLoad}
+                    className="h-[60vh] w-full object-contain"
+                    style={{
+                      maxHeight: "100%",
+                      maxWidth: "100%",
+                      zIndex: 20,
+                      position: "relative",
+                    }}
+                  />
                 </div>
 
                 {/* Video Progress Indicator - Only show when video is playing and not when controls are visible */}

@@ -32,7 +32,7 @@ import { useAuth } from "@/Context/auth";
 
 const CourseDetailsPage = ({ params }) => {
   const router = useRouter();
-  const { enrolledCourses } = useCourses();
+  const { enrolledCourses, fetchEnrolledCourses } = useCourses();
   const { auth } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const [courseDetails, setCourseDetails] = useState(null);
@@ -180,12 +180,8 @@ const CourseDetailsPage = ({ params }) => {
         showSuccessToast(result.message || "Successfully enrolled in course!");
 
         // Refresh enrolled courses in context
-        if (typeof window !== "undefined") {
-          // Force a page reload to update the context
-          window.location.href = `/dashboard/courses/${id}/watch`;
-        } else {
-          router.push(`/dashboard/courses/${id}/watch`);
-        }
+        await fetchEnrolledCourses();
+        router.push(`/dashboard/courses/${id}/watch`);
       } else if (courseDetails.price === 0) {
         // Free course but not beginner - still enroll directly
         console.log("Enrolling in free course...");
@@ -194,12 +190,8 @@ const CourseDetailsPage = ({ params }) => {
         showSuccessToast(result.message || "Successfully enrolled in course!");
 
         // Refresh enrolled courses in context
-        if (typeof window !== "undefined") {
-          // Force a page reload to update the context
-          window.location.href = `/dashboard/courses/${id}/watch`;
-        } else {
-          router.push(`/dashboard/courses/${id}/watch`);
-        }
+        await fetchEnrolledCourses();
+        router.push(`/dashboard/courses/${id}/watch`);
       } else {
         // Paid course - show payment modal
         console.log("Showing payment modal for paid course...");

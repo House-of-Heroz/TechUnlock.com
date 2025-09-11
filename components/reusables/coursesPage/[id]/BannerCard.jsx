@@ -33,7 +33,7 @@ import { enrollInCourse } from "@/services/course";
 import { showErrorToast, showSuccessToast } from "@/helpers/toastUtil";
 
 export const BannerCard = ({ course }) => {
-  const { courses } = useCourses();
+  const { courses, fetchEnrolledCourses } = useCourses();
   const { auth } = useAuth();
   const [Courses, setCourses] = React.useState();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -90,7 +90,7 @@ export const BannerCard = ({ course }) => {
 
   // Check if course is free and beginner level
   const isFreeBeginner =
-    !course?.is_paid && course?.difficulty?.toLowerCase() === "beginner";
+    !course?.is_paid || course?.difficulty?.toLowerCase() === "beginner";
 
   // Handle enrollment with authentication check
   const handleEnrollment = async () => {
@@ -118,6 +118,10 @@ export const BannerCard = ({ course }) => {
       if (isFreeBeginner) {
         const result = await enrollInCourse(course.id);
         showSuccessToast(result.message || "Successfully enrolled in course!");
+
+        // Refresh enrolled courses in context
+        await fetchEnrolledCourses();
+
         router.push(`/dashboard/courses/${course.id}/watch`);
       } else {
         // For paid courses or non-beginner courses, go to payment page
@@ -195,6 +199,7 @@ export const BannerCard = ({ course }) => {
               Physical classes are available
             </Label>
           </div>
+
           <div className="flex items-center space-x-4">
             <RadioGroupItem value="tutor" id="tutor" />
             <Label htmlFor="tutor" className={getLabelClass("tutor")}>

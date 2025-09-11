@@ -22,7 +22,7 @@ import AI from "@/assets/course-page/AICard.svg";
 const Description = React.memo(({ course }) => {
   return (
     <div className="w-full">
-      <div className="grid gap-y-5 lg:gap-y-0 lg:flex lg:justify-between lg:items-center w-full bg-pri1 py-[2rem] px-[2rem] lg:px-[3rem]">
+      <div className="grid gap-y-5 lg:gap-y-0 lg:flex lg:justify-between lg:items-start w-full bg-pri1 py-[2rem] px-[2rem] lg:px-[3rem]">
         <div className="lg:w-[55%]">
           <div className="">
             <div className="relative w-4/5 ml-auto">
@@ -192,7 +192,7 @@ const Description = React.memo(({ course }) => {
           </div>
         </div>
 
-        <div className="lg:w-[40%]">
+        <div className="lg:w-[40%] lg:sticky lg:top-20 lg:mt-20">
           <Image
             src={
               course?.category === "UI/UX Design"
