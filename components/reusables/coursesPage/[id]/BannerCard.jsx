@@ -33,9 +33,8 @@ import { enrollInCourse } from "@/services/course";
 import { showErrorToast, showSuccessToast } from "@/helpers/toastUtil";
 
 export const BannerCard = ({ course }) => {
-  const { courses, fetchEnrolledCourses } = useCourses();
+  const { courses, enrolledCourses, fetchEnrolledCourses } = useCourses();
   const { auth } = useAuth();
-  const [Courses, setCourses] = React.useState();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState("onsite");
   const [isEnrolling, setIsEnrolling] = useState(false);
@@ -60,9 +59,26 @@ export const BannerCard = ({ course }) => {
     { id: 3, image: mentor, option: "tutor" },
   ];
 
+  // Check if user is enrolled in this course
+  const isAlreadyEnrolled = enrolledCourses?.some(
+    (enrolledCourse) =>
+      enrolledCourse?.id === course?.id ||
+      enrolledCourse?.id === parseInt(course?.id) ||
+      parseInt(enrolledCourse?.id) === course?.id ||
+      parseInt(enrolledCourse?.id) === parseInt(course?.id)
+  );
+
+  // Debug logging
   useEffect(() => {
-    setCourses(courses);
-  }, [courses]);
+    console.log("BannerCard Debug:", {
+      courseId: course?.id,
+      courseTitle: course?.title,
+      enrolledCourses: enrolledCourses,
+      enrolledCoursesLength: enrolledCourses?.length,
+      isAlreadyEnrolled: isAlreadyEnrolled,
+      enrolledCourseIds: enrolledCourses?.map((c) => c.id),
+    });
+  }, [course?.id, course?.title, enrolledCourses, isAlreadyEnrolled]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -102,9 +118,6 @@ export const BannerCard = ({ course }) => {
     }
 
     // Check if already enrolled
-    const isAlreadyEnrolled =
-      course?.id ===
-      Courses?.enrolled_courses?.find((item) => item?.id === course?.id);
     if (isAlreadyEnrolled) {
       showSuccessToast("You are already enrolled in this course");
       router.push(`/dashboard/courses/${course.id}/watch`);
@@ -224,16 +237,11 @@ export const BannerCard = ({ course }) => {
         <Button
           onClick={handleEnrollment}
           className="w-full"
-          disabled={
-            isEnrolling ||
-            course?.id ===
-              Courses?.enrolled_courses?.find((item) => item?.id === course?.id)
-          }
+          disabled={isEnrolling || isAlreadyEnrolled}
         >
           {isEnrolling
             ? "Enrolling..."
-            : course?.id ===
-              Courses?.enrolled_courses?.find((item) => item?.id === course?.id)
+            : isAlreadyEnrolled
             ? "Already enrolled"
             : isFreeBeginner
             ? "Enroll Now (Free)"

@@ -98,7 +98,7 @@ const AdminLayout = ({ children }) => {
                 {/* Desktop Collapse Button */}
                 <button
                   onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                  className="hidden lg:flex w-8 h-8 bg-blue-100 rounded-full items-center justify-center hover:bg-blue-200 transition-colors"
+                  className="hidden absolute top-1/2 -translate-y-1/2 right-0 lg:flex w-8 h-8 bg-blue-100 rounded-full items-center justify-center hover:bg-blue-200 transition-colors"
                 >
                   <ChevronLeft
                     className={`w-4 h-4 text-[#13485B] transition-transform ${

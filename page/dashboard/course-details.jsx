@@ -881,7 +881,6 @@ const CourseDetailsPage = ({ courseId }) => {
                         )}
                       </button>
                     ))}
-
                     {/* Module Summaries - Only show after all videos are completed */}
                     {module.summaries &&
                       module.summaries.length > 0 &&
@@ -919,28 +918,27 @@ const CourseDetailsPage = ({ courseId }) => {
                           ))}
                         </div>
                       )}
-
                     {/* Quizzes */}
-                    {module.quizzes.map((quiz) => (
-                      <button
-                        key={quiz.id}
-                        onClick={() => selectQuiz(quiz, module)}
-                        disabled={module.is_locked}
-                        className={`w-full px-8 py-2 flex items-center text-left hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed ${
-                          currentQuiz?.id === quiz.id
-                            ? "bg-blue-50 border-r-2 border-[#13485B]"
-                            : ""
-                        }`}
-                      >
-                        <div className="w-4 h-4 bg-orange-500 rounded mr-3 flex items-center justify-center">
-                          <span className="text-xs text-white">?</span>
-                        </div>
-                        <p className="text-sm text-gray-600">Module Quiz</p>
-                        {completedItems.has(`quiz-${quiz.id}`) && (
-                          <CheckCircle className="w-4 h-4 text-green-500 ml-2" />
-                        )}
-                      </button>
-                    ))}
+                    {/* {module.quizzes.map((quiz) => ( */}
+                    <button
+                      key={quiz.id}
+                      onClick={() => selectQuiz(quiz, module)}
+                      disabled={module.is_locked}
+                      className={`w-full px-8 py-2 flex items-center text-left hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed ${
+                        currentQuiz?.id === quiz.id
+                          ? "bg-blue-50 border-r-2 border-[#13485B]"
+                          : ""
+                      }`}
+                    >
+                      <div className="w-4 h-4 bg-orange-500 rounded mr-3 flex items-center justify-center">
+                        <span className="text-xs text-white">?</span>
+                      </div>
+                      <p className="text-sm text-gray-600">Module Quiz</p>
+                      {completedItems.has(`quiz-${quiz.id}`) && (
+                        <CheckCircle className="w-4 h-4 text-green-500 ml-2" />
+                      )}
+                    </button>
+                    {/* ))} */}
                   </div>
                 )}
               </div>

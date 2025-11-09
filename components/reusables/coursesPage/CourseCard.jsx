@@ -28,7 +28,14 @@ const CourseCard = React.memo(({ item }) => {
 
   // Check if the current course is enrolled - memoized for performance
   const isEnrolled = useMemo(
-    () => enrolledCourses?.some((enrolled) => enrolled.id === item.id),
+    () =>
+      enrolledCourses?.some(
+        (enrolled) =>
+          enrolled?.id === item?.id ||
+          enrolled?.id === parseInt(item?.id) ||
+          parseInt(enrolled?.id) === item?.id ||
+          parseInt(enrolled?.id) === parseInt(item?.id)
+      ),
     [enrolledCourses, item.id]
   );
 

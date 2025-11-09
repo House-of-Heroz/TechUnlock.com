@@ -35,11 +35,12 @@ export const CoursesProvider = ({ children }) => {
   const fetchEnrolledCourses = useCallback(async () => {
     try {
       const data = await getEnrolledCourses();
-      console.log(data);
-      setEnrolledCourses(data.enrolled_courses);
-      console.log(data.enrolled_courses);
+      console.log("Raw enrolled courses data:", data);
+      setEnrolledCourses(data.enrolled_courses || []);
+      console.log("Set enrolled courses:", data.enrolled_courses);
     } catch (error) {
-      console.error("Error fetching courses:", error.message);
+      console.error("Error fetching enrolled courses:", error.message);
+      setEnrolledCourses([]);
     }
   }, []);
 

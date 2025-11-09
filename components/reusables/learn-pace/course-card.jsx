@@ -29,7 +29,11 @@ const CourseCard = ({ item }) => {
 
   // Check if the current course is enrolled
   const isEnrolled = enrolledCourses?.some(
-    (enrolled) => enrolled.id === item.id
+    (enrolled) =>
+      enrolled?.id === item?.id ||
+      enrolled?.id === parseInt(item?.id) ||
+      parseInt(enrolled?.id) === item?.id ||
+      parseInt(enrolled?.id) === parseInt(item?.id)
   );
 
   return (

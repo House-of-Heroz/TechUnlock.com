@@ -47,7 +47,11 @@ const CourseDetailsPage = ({ params }) => {
 
   // Check if user is enrolled in this course
   const isEnrolled = enrolledCourses?.some(
-    (enrolledCourse) => enrolledCourse.id === parseInt(id)
+    (enrolledCourse) =>
+      enrolledCourse?.id === parseInt(id) ||
+      enrolledCourse?.id === id ||
+      parseInt(enrolledCourse?.id) === parseInt(id) ||
+      parseInt(enrolledCourse?.id) === id
   );
 
   console.log("Enrollment check:", {

@@ -30,7 +30,11 @@ const Overview = ({ course }) => {
 
   // Check if already enrolled
   const isAlreadyEnrolled = enrolledCourses?.some(
-    (enrolledCourse) => enrolledCourse.id === course?.id
+    (enrolledCourse) =>
+      enrolledCourse?.id === course?.id ||
+      enrolledCourse?.id === parseInt(course?.id) ||
+      parseInt(enrolledCourse?.id) === course?.id ||
+      parseInt(enrolledCourse?.id) === parseInt(course?.id)
   );
 
   // Handle enrollment with authentication check

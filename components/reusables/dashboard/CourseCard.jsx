@@ -23,7 +23,11 @@ const CourseCard = React.memo(
 
     // Check if user is enrolled in this course
     const isEnrolled = enrolledCourses?.some(
-      (enrolledCourse) => enrolledCourse.id === item?.id
+      (enrolledCourse) =>
+        enrolledCourse?.id === item?.id ||
+        enrolledCourse?.id === parseInt(item?.id) ||
+        parseInt(enrolledCourse?.id) === item?.id ||
+        parseInt(enrolledCourse?.id) === parseInt(item?.id)
     );
 
     const handleLearnMore = useCallback(() => {

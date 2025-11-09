@@ -133,14 +133,23 @@ export async function getEnrolledCourses() {
       } else {
         // Handle unexpected response status
         console.error(`Unexpected response status: ${response.status}`);
-        return "An error occurred while getting enrolled courses.";
+        return { enrolled_courses: [] };
       }
+    } else {
+      // No token - user not authenticated, return empty array
+      console.log("No token found, returning empty enrolled courses");
+      return { enrolled_courses: [] };
     }
   } catch (error) {
     console.error("Error during getting enrolled course:", error);
 
     if (error.response) {
       // Server responded with a status other than 200 range
+      if (error.response.status === 401) {
+        // Unauthorized - user not authenticated
+        console.log("Unauthorized access, returning empty enrolled courses");
+        return { enrolled_courses: [] };
+      }
       throw new Error(error.response.data.message || "An error occurred.");
     } else if (error.request) {
       // Request was made but no response received

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useAuth } from "@/Context/auth";
 
-const Navigation = () => {
+const Navigation = ({ sidebarCollapsed }) => {
   const [openLinks, setOpenLinks] = useState({});
 
   const handleToggle = (id) => {
@@ -38,13 +38,17 @@ const Navigation = () => {
               >
                 <Link
                   href={link.to}
-                  className="flex items-center no-underline"
+                  className={`flex items-center no-underline ${
+                    sidebarCollapsed ? "justify-center" : ""
+                  }`}
                   activeclassname="font-bold"
                 >
-                  <link.iconActive className="mr-2" />
-                  {link.name}
+                  <link.iconActive
+                    className={`${sidebarCollapsed ? "mr-0" : "mr-2"}`}
+                  />
+                  {!sidebarCollapsed && link.name}
                 </Link>
-                {link.children && (
+                {link.children && !sidebarCollapsed && (
                   <span className="ml-2">
                     {openLinks[link.id] ? (
                       <ChevronUp size={18} />
@@ -54,7 +58,7 @@ const Navigation = () => {
                   </span>
                 )}
               </div>
-              {link.children && openLinks[link.id] && (
+              {link.children && openLinks[link.id] && !sidebarCollapsed && (
                 <ul className="bg-pri1 text-sec10 border-gray-300 list-none grid gap-y-2 rounded-md">
                   {link.children.map((child) => (
                     <li key={child.id} className="mb-2 pl-3">

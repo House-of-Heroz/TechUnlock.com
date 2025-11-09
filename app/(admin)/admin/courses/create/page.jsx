@@ -34,62 +34,212 @@ import {
 import { showErrorToast, showSuccessToast } from "@/helpers/toastUtil";
 import LoadingSpinner from "@/components/reusables/LoadingSpinner";
 
-// Move RichTextEditor outside the main component to prevent re-creation
-const RichTextEditor = React.memo(({ value, onChange, placeholder }) => (
-  <div className="border border-gray-300 rounded-lg">
-    <div className="border-b border-gray-300 p-2 flex items-center space-x-2 flex-wrap">
-      <select className="text-sm border border-gray-300 rounded px-2 py-1">
-        <option>Normal text</option>
-        <option>Heading 1</option>
-        <option>Heading 2</option>
-        <option>Heading 3</option>
-      </select>
-      <button type="button" className="p-1 hover:bg-gray-100 rounded">
-        <Bold className="w-4 h-4" />
-      </button>
-      <button type="button" className="p-1 hover:bg-gray-100 rounded">
-        <Italic className="w-4 h-4" />
-      </button>
-      <button type="button" className="p-1 hover:bg-gray-100 rounded">
-        <Underline className="w-4 h-4" />
-      </button>
-      <button type="button" className="p-1 hover:bg-gray-100 rounded">
-        <Strikethrough className="w-4 h-4" />
-      </button>
-      <button type="button" className="p-1 hover:bg-gray-100 rounded">
-        <Link className="w-4 h-4" />
-      </button>
-      <button type="button" className="p-1 hover:bg-gray-100 rounded">
-        <Quote className="w-4 h-4" />
-      </button>
-      <button type="button" className="p-1 hover:bg-gray-100 rounded">
-        <List className="w-4 h-4" />
-      </button>
-      <button type="button" className="p-1 hover:bg-gray-100 rounded">
-        <ListOrdered className="w-4 h-4" />
-      </button>
-      <button type="button" className="p-1 hover:bg-gray-100 rounded">
-        <AlignLeft className="w-4 h-4" />
-      </button>
-      <button type="button" className="p-1 hover:bg-gray-100 rounded">
-        <AlignCenter className="w-4 h-4" />
-      </button>
-      <button type="button" className="p-1 hover:bg-gray-100 rounded">
-        <AlignRight className="w-4 h-4" />
-      </button>
-      <button type="button" className="p-1 hover:bg-gray-100 rounded">
-        <AlignJustify className="w-4 h-4" />
-      </button>
+// Enhanced RichTextEditor with working formatting
+const RichTextEditor = React.memo(({ value, onChange, placeholder }) => {
+  const textareaRef = React.useRef(null);
+
+  const executeCommand = (command, value = null) => {
+    document.execCommand(command, false, value);
+    textareaRef.current?.focus();
+  };
+
+  const insertText = (before, after = "") => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = value.substring(start, end);
+    const newText =
+      value.substring(0, start) +
+      before +
+      selectedText +
+      after +
+      value.substring(end);
+
+    onChange(newText);
+
+    // Restore cursor position
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + before.length, end + before.length);
+    }, 0);
+  };
+
+  const handleFormat = (format) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = value.substring(start, end);
+
+    let formattedText = "";
+    switch (format) {
+      case "bold":
+        formattedText = `**${selectedText}**`;
+        break;
+      case "italic":
+        formattedText = `*${selectedText}*`;
+        break;
+      case "underline":
+        formattedText = `<u>${selectedText}</u>`;
+        break;
+      case "strikethrough":
+        formattedText = `~~${selectedText}~~`;
+        break;
+      case "link":
+        const url = prompt("Enter URL:");
+        if (url) {
+          formattedText = `[${selectedText}](${url})`;
+        } else {
+          return;
+        }
+        break;
+      case "quote":
+        formattedText = `> ${selectedText}`;
+        break;
+      case "list":
+        formattedText = `- ${selectedText}`;
+        break;
+      case "orderedList":
+        formattedText = `1. ${selectedText}`;
+        break;
+      default:
+        formattedText = selectedText;
+    }
+
+    const newText =
+      value.substring(0, start) + formattedText + value.substring(end);
+    onChange(newText);
+
+    // Restore cursor position
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        start + formattedText.length,
+        start + formattedText.length
+      );
+    }, 0);
+  };
+
+  const handleHeading = (level) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = value.substring(start, end);
+    const headingPrefix = "#".repeat(level) + " ";
+    const formattedText = headingPrefix + selectedText;
+
+    const newText =
+      value.substring(0, start) + formattedText + value.substring(end);
+    onChange(newText);
+
+    // Restore cursor position
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        start + formattedText.length,
+        start + formattedText.length
+      );
+    }, 0);
+  };
+
+  return (
+    <div className="border border-gray-300 rounded-lg">
+      <div className="border-b border-gray-300 p-2 flex items-center space-x-2 flex-wrap">
+        <select
+          className="text-sm border border-gray-300 rounded px-2 py-1"
+          onChange={(e) => {
+            if (e.target.value !== "normal") {
+              handleHeading(parseInt(e.target.value));
+              e.target.value = "normal";
+            }
+          }}
+        >
+          <option value="normal">Normal text</option>
+          <option value="1">Heading 1</option>
+          <option value="2">Heading 2</option>
+          <option value="3">Heading 3</option>
+        </select>
+        <button
+          type="button"
+          className="p-1 hover:bg-gray-100 rounded"
+          onClick={() => handleFormat("bold")}
+          title="Bold"
+        >
+          <Bold className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          className="p-1 hover:bg-gray-100 rounded"
+          onClick={() => handleFormat("italic")}
+          title="Italic"
+        >
+          <Italic className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          className="p-1 hover:bg-gray-100 rounded"
+          onClick={() => handleFormat("underline")}
+          title="Underline"
+        >
+          <Underline className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          className="p-1 hover:bg-gray-100 rounded"
+          onClick={() => handleFormat("strikethrough")}
+          title="Strikethrough"
+        >
+          <Strikethrough className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          className="p-1 hover:bg-gray-100 rounded"
+          onClick={() => handleFormat("link")}
+          title="Insert Link"
+        >
+          <Link className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          className="p-1 hover:bg-gray-100 rounded"
+          onClick={() => handleFormat("quote")}
+          title="Quote"
+        >
+          <Quote className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          className="p-1 hover:bg-gray-100 rounded"
+          onClick={() => handleFormat("list")}
+          title="Bullet List"
+        >
+          <List className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          className="p-1 hover:bg-gray-100 rounded"
+          onClick={() => handleFormat("orderedList")}
+          title="Numbered List"
+        >
+          <ListOrdered className="w-4 h-4" />
+        </button>
+      </div>
+      <textarea
+        ref={textareaRef}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={6}
+        className="w-full p-3 focus:outline-none resize-none font-mono text-sm"
+      />
     </div>
-    <textarea
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      rows={6}
-      className="w-full p-3 focus:outline-none resize-none"
-    />
-  </div>
-));
+  );
+});
 
 RichTextEditor.displayName = "RichTextEditor";
 
@@ -422,6 +572,12 @@ const CreateCoursePage = () => {
         instructor: formData.instructor,
         category: formData.category,
         difficulty: formData.difficulty,
+        skills: formData.skills
+          ? formData.skills
+              .split(",")
+              .map((skill) => skill.trim())
+              .filter((skill) => skill.length > 0)
+          : [],
         is_published: true,
         is_paid: trainingFeeData.trainingType === "paid",
         price:
@@ -568,6 +724,20 @@ const CreateCoursePage = () => {
         skills: courseData.skills?.join(", ") || "",
       });
 
+      console.log("Fetched course data for editing:", courseData);
+      console.log("Transformed form data:", {
+        courseTitle: courseData.title || "",
+        shortDescription: courseData.short_description || "",
+        detailedDescription: courseData.description || "",
+        instructor: courseData.instructor || "",
+        category: courseData.category || "",
+        numberOfModules: courseData.modules?.length?.toString() || "",
+        estimatedTime: courseData.duration?.replace(" hours", "") || "",
+        tags: courseData.tags?.join(", ") || "",
+        difficulty: courseData.difficulty || "",
+        skills: courseData.skills?.join(", ") || "",
+      });
+
       // Set uploaded files
       if (courseData.cover_image) {
         setUploadedFiles((prev) => ({
@@ -613,6 +783,7 @@ const CreateCoursePage = () => {
           ],
         }));
         setModules(transformedModules);
+        console.log("Transformed modules data:", transformedModules);
       }
 
       // Transform badge data
@@ -627,6 +798,11 @@ const CreateCoursePage = () => {
             badgeImage: courseData.badge.icon,
           }));
         }
+        console.log("Transformed badge data:", {
+          badgeTitle: courseData.badge.title || "",
+          badgeDescription: courseData.badge.description || "",
+          badgeImage: courseData.badge.icon || "",
+        });
       }
 
       // Transform community data
@@ -635,10 +811,18 @@ const CreateCoursePage = () => {
           communityLink: courseData.community_link.link || "",
           shortMessage: courseData.community_link.description || "",
         });
+        console.log("Transformed community data:", {
+          communityLink: courseData.community_link.link || "",
+          shortMessage: courseData.community_link.description || "",
+        });
       }
 
       // Transform training fee data
       setTrainingFeeData({
+        trainingType: courseData.is_paid ? "paid" : "free",
+        amount: courseData.price?.toString() || "",
+      });
+      console.log("Transformed training fee data:", {
         trainingType: courseData.is_paid ? "paid" : "free",
         amount: courseData.price?.toString() || "",
       });
@@ -1253,6 +1437,12 @@ const CreateCoursePage = () => {
         instructor: formData.instructor,
         category: formData.category,
         difficulty: formData.difficulty,
+        skills: formData.skills
+          ? formData.skills
+              .split(",")
+              .map((skill) => skill.trim())
+              .filter((skill) => skill.length > 0)
+          : [],
         is_published: true,
         is_paid: trainingFeeData.trainingType === "paid",
         price:
