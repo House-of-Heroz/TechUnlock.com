@@ -1,4 +1,5 @@
 "use client";
+
 import AddCourse from "@/page/dashboard/AddCourse";
 import React, { useEffect } from "react";
 import { useAuth } from "@/Context/auth";
