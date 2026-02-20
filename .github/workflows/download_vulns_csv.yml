@@ -20,35 +20,16 @@ jobs:
           curl -s -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
                -H "Accept: application/vnd.github+json" \
                https://api.github.com/repos/House-of-Heroz/techunlock/dependabot/alerts \
-              jq -r '
-                    [
-                      "Numbers","Package","Severity","State","Summary","CVE"
-                    ],
-                    (
-                      .[]? |
-                      if type == "object" then
-                        [
-                          .number // "N/A",
-                          .dependency.package.name // "N/A",
-                          .security_advisory.severity // "N/A",
-                          .state // "N/A",
-                          .security_advisory.summary // "N/A",
-                    
-                          (
-                            (.security_advisory.identifiers // [])
-                            | if type == "array" then
-                                map(select(.type=="CVE").value) | first
-                              else
-                                "N/A"
-                              end
-                          ) // "N/A"
-                        ]
-                      else
-                        empty
-                      end
-                    )
-                    | @csv
-                    ' input.json > data/vulnerability.csv
+          | jq -r '
+            ["Number","Package","Severity","State","Summary","CVE"],
+            (.[] | [
+              .number,
+              .dependency.package.name,
+              .security_advisory.severity,
+              .state,
+              .security_advisory.summary,
+              (.security_advisory.identifiers[] | select(.type=="CVE") | .value) // "N/A"
+            ]) | @csv' > data/vulnerability.csv
 
       - name: Upload Vulnerability report
         uses: actions/upload-artifact@v4
