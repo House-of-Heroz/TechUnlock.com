@@ -21,7 +21,7 @@ jobs:
                -H "Accept: application/vnd.github+json" \
                https://api.github.com/repos/House-of-Heroz/techunlock/dependabot/alerts \
           | jq -r '
-            ["Number","Package","Severity","State","Summary","CVE"],
+            ["Package","Severity","State","Summary","CVE"],
             (.[] | [
               .number,
               .dependency.package.name,
