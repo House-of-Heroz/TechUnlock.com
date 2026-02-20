@@ -1,0 +1,38 @@
+name: Export Dependabot Alerts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  export-alerts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get install jq -y
+
+      - name: Export Dependabot alerts to CSV
+        run: |
+          mkdir -p data
+          curl -s -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+               -H "Accept: application/vnd.github+json" \
+               https://api.github.com/repos/House-of-Heroz/techunlock/dependabot/alerts \
+          | jq -r '
+            ["Number","Package","Severity","State","Summary","CVE"],
+            (.[] | [
+              .number,
+              .dependency.package.name,
+              .security_advisory.severity,
+              .state,
+              .security_advisory.summary,
+              (.security_advisory.identifiers[] | select(.type=="CVE") | .value) // "N/A"
+            ]) | @csv' > data/vulnerability.csv
+
+      - name: Upload Vulnerability report
+        uses: actions/upload-artifact@v4
+        with:
+          name: vulnerability_report
+          path: data/vulnerability.csv
